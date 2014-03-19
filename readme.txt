@@ -46,11 +46,8 @@ Go to Settings -> Media to configure.
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets 
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png` 
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. This screen shot is for the settings page /assets/advanced-uploader - settings.png
+2. This screen shot is for the destination selection page /assets/advanced-uploader - dest.png
 
 == Changelog ==
 
