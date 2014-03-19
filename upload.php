@@ -420,6 +420,22 @@
 	
 	
 	// ------------------------------------------------------------------
+	// Settings link
+	// ------------------------------------------------------------------
+	//
+	// This function adds settings link to plugin page.  
+	//
+	
+	//Add the filter with your plugin information
+	add_filter( 'plugin_action_links_' . 'advanced-uploader/upload.php', 'adv_file_upload_setting_action_links' );
+	
+	//The callback function to add the settings link
+	function adv_file_upload_setting_action_links( $links ) {
+		array_unshift( $links, '<a href="'. get_admin_url(null, 'options-media.php') .'">Settings</a>' );
+		return $links;
+	}
+
+	// ------------------------------------------------------------------
 	// Settings section callback function
 	// ------------------------------------------------------------------
 	//
