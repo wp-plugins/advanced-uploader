@@ -56,6 +56,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
-
+= 1.1 =
+fixed bug that stopped plugin working when not replacing default
 = 1.0 =
 Readme file added.
