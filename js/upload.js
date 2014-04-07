@@ -94,7 +94,6 @@ plupload_defaults.preinit = {
 		up.settings.resize.enabled = false;
 
 		if (adv_uploader) {
-			console.log(up);
 			up.settings.chunk_size = max_file_size;
 			up.settings.filters.max_file_size = adv_max_file_size;
 		}

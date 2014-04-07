@@ -20,7 +20,7 @@
 
 	function adv_file_upload_admin_init() {
 		// Register main scripts
-		wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload-html5', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete'), '1.0', true);
+		wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload-html5', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '1.0', true);
 		//TBD wp_register_script( 'spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 		wp_register_script( 'pdf-js', plugins_url('/js/pdf.js', __FILE__) );
 		wp_register_script( 'id3-js', plugins_url('/js/id3.min.js', __FILE__) );
