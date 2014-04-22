@@ -46,7 +46,7 @@ if (typeof _wpPluploadSettings === 'object')
     };
 })(this);
 
-var max_file_size = parseInt(plupload_defaults.max_file_size);
+var max_file_size = parseInt(plupload_defaults.filters.max_file_size);
 plupload_defaults.preinit = {
 	PostInit: function(up) {
 		var uploaddiv = jQuery('#plupload-upload-ui');
@@ -309,11 +309,11 @@ jQuery(document).ready(function() {
 				
 		var upload_js = document.getElementById('tmpl-uploader-inline');
 		if (upload_js !== null) {
-			var pPos = upload_js.innerHTML.lastIndexOf('</p>');
 			var pattern = new RegExp(max_file_size_display,'i');
 			var maxPos = upload_js.innerHTML.search(pattern);
+			var pPos = upload_js.innerHTML.indexOf('</p>', maxPos);
 
-			upload_js.innerHTML = upload_js.textContent.substring(0, maxPos)
+			upload_js.innerHTML = upload_js.innerHTML.substring(0, maxPos)
 				+ max + upload_js.innerHTML.substring(maxPos+max_file_size_display.length,pPos+4)
 				+ check_box + upload_js.innerHTML.substring(pPos+4);
 		}

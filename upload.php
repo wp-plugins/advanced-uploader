@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.1
+	Version: 1.2
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -20,14 +20,14 @@
 
 	function adv_file_upload_admin_init() {
 		// Register main scripts
-		wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload-html5', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '1.0', true);
+		wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload-html5', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '1.1', true);
 		//TBD wp_register_script( 'spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 		wp_register_script( 'pdf-js', plugins_url('/js/pdf.js', __FILE__) );
 		wp_register_script( 'id3-js', plugins_url('/js/id3.min.js', __FILE__) );
 		
 		//Register Plupload 2.1.1
 		wp_register_script( 'plupload2', plugins_url('/js/plupload.full.min.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '2.1.1');
-
+		
 		// Register settings scripts
 		wp_register_script( 'adv-file-upload-settings', plugins_url('/js/upload-settings.min.js', __FILE__), null, '1.0');
 
@@ -259,17 +259,20 @@
 
 		wp_enqueue_script( 'adv-file-upload' );
 		if (get_option('adv_file_upload_replace_default') || $adv_file_upload_admin_page == $hook) {
-			wp_deregister_script('plupload');
-			wp_deregister_script('plupload-html5');
-			wp_deregister_script('plupload-flash');
-			wp_deregister_script('plupload-silverlight');
-			wp_deregister_script('plupload-html4');
-			//wp_deregister_script('plupload-handlers');
-			wp_register_script( 'plupload', null, array( 'plupload2' ), '1.0');
-			wp_register_script( 'plupload-html5', null, array( 'plupload2' ), '1.0');
-			wp_register_script( 'plupload-flash', null, array( 'plupload2' ), '1.0');
-			wp_register_script( 'plupload-silverlight', null, array( 'plupload2' ), '1.0');
-			wp_register_script( 'plupload-html4', null, array( 'plupload2' ), '1.0');
+			//check version number and include newer version plupload if wordpress version is older then 3.9
+			global $wp_version;
+			if( version_compare( $wp_version, 3.9 ) < 0 ) {
+				wp_deregister_script('plupload');
+				wp_deregister_script('plupload-html5');
+				wp_deregister_script('plupload-flash');
+				wp_deregister_script('plupload-silverlight');
+				wp_deregister_script('plupload-html4');
+				wp_register_script( 'plupload', null, array( 'plupload2' ), '1.0');
+				wp_register_script( 'plupload-html5', null, array( 'plupload2' ), '1.0');
+				wp_register_script( 'plupload-flash', null, array( 'plupload2' ), '1.0');
+				wp_register_script( 'plupload-silverlight', null, array( 'plupload2' ), '1.0');
+				wp_register_script( 'plupload-html4', null, array( 'plupload2' ), '1.0');
+			}
 		}
 		
 		wp_enqueue_style( 'adv-file-upload-css' );
@@ -775,7 +778,7 @@
 	                                // Thumbnail, medium, and full sizes are also checked against the site's height/width options.
 	                                list( $width, $height ) = image_constrain_size_for_editor( $size_meta['width'], $size_meta['height'], $size, 'edit' );
 	
-	                                $sizes[ $size ] = "<option value='" . $size . "'>" . $possible_sizes[ $size ] . " â€“ $width Ã— $height</option>";
+	                                $sizes[ $size ] = "<option value='" . $size . "'>" . $possible_sizes[ $size ] . " – $width × $height</option>";
 	                        }
 	                }
 	                
