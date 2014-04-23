@@ -2,8 +2,8 @@
 Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
-Tested up to: 3.8.1
-Stable tag: 1.2
+Tested up to: 3.9
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.3 =
+* updated upload script to allow large uploads from editor
 = 1.2 =
 * fixed javascript bugs in 3.9
 * removed replacing of plupload as use the same version.
@@ -59,6 +61,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 1.3 =
+* updated to allow large uploads from editor
 = 1.2 =
 * updated to work with wordpress 3.9
 = 1.1 =

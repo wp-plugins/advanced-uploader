@@ -2,6 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
+ * version : 1.3
  */
 'use strict';
 'use strict';
@@ -23,9 +24,10 @@ msgProgressDiv.appendChild(msgProgLabel);
 msgProgressDiv.appendChild(msgProgress);
 
 //add setting to uploader
+//add media page
 if (typeof wpUploaderInit === 'object')
 	var plupload_defaults = wpUploaderInit;
-
+//edit post/page
 if (typeof _wpPluploadSettings === 'object')
 	var plupload_defaults = _wpPluploadSettings.defaults;
 
@@ -47,6 +49,10 @@ if (typeof _wpPluploadSettings === 'object')
 })(this);
 
 var max_file_size = parseInt(plupload_defaults.filters.max_file_size);
+if (adv_uploader) {
+	plupload_defaults.filters.max_file_size = adv_max_file_size;
+}
+
 plupload_defaults.preinit = {
 	PostInit: function(up) {
 		var uploaddiv = jQuery('#plupload-upload-ui');
