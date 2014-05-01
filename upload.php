@@ -32,8 +32,8 @@
 		wp_register_script( 'adv-file-upload-settings', plugins_url('/js/upload-settings.min.js', __FILE__), null, '1.0');
 
 		// register style
-		wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'jquery-ui-style') );
-		wp_register_style( 'jquery-ui-style', plugins_url('/css/jquery-ui.min.css', __FILE__ ) );
+		wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'jquery-ui-advupl-style') );
+		wp_register_style( 'jquery-ui-advupl-style', plugins_url('/css/jquery-ui-1.10.4.min.css', __FILE__ ) );
 	}
 	
 	//function to recursively go through categories
@@ -514,7 +514,7 @@
 	}
 	
 	// ------------------------------------------------------------------
-	// Destiantions Callback function
+	// Destinations Callback function
 	// ------------------------------------------------------------------
 	//
 	// creates a boxes for destination settings
@@ -749,7 +749,7 @@
 
 
 	//add images sizes to pdf attachemnts (if stored in meta) for selection in media library
-	function change_attachment_fields_to_edit($form_fields, $post) {
+	function advupl_attachment_fields_to_edit($form_fields, $post) {
 	        if ( !preg_match("/^image/", $post->post_mime_type) ) {
 			$attachment_url = wp_get_attachment_url( $post->ID );
 			$meta = wp_get_attachment_metadata( $post->ID );
@@ -762,45 +762,53 @@
 	                ) );
 	                unset( $possible_sizes['full'] );
 
-	                // Loop through all potential sizes that may be chosen. Try to do this with some efficiency.
-	                // First: run the image_downsize filter. If it returns something, we can use its data.
-	                // If the filter does not return something, then image_downsize() is just an expensive
-	                // way to check the image metadata, which we do second.
-	                foreach ( $possible_sizes as $size => $label ) {
-				if ( isset( $meta['sizes'][ $size ] ) ) {
-	                                if ( ! isset( $base_url ) )
-	                                        $base_url = str_replace( wp_basename( $attachment_url ), '', $attachment_url );
-	
-	                                // Nothing from the filter, so consult image metadata if we have it.
-	                                $size_meta = $meta['sizes'][ $size ];
-	
-	                                // We have the actual image size, but might need to further constrain it if content_width is narrower.
-	                                // Thumbnail, medium, and full sizes are also checked against the site's height/width options.
-	                                list( $width, $height ) = image_constrain_size_for_editor( $size_meta['width'], $size_meta['height'], $size, 'edit' );
-	
-	                                $sizes[ $size ] = "<option value='" . $size . "'>" . $possible_sizes[ $size ] . " – $width × $height</option>";
-	                        }
-	                }
-	                
-	                //add image size select if attachment has other images associated
-	                if (count ($sizes) > 0) {
-		                $sizes['link'] = "<option value='link' selected>Link Only</option>";
-	
-				$sizes_array = array(
-					'display_attachment_image' => array(
-					'label'     => __('sizes', 'display_attachment_image'),
-					'input'     => 'html',
-					'html'      => "<select class='size' name='attachments[$post->ID][display_attachment_image]' "
-						. "id='display_attachment_image-{$post->ID}' data-setting='size' data-user-setting='imgsize'>\n"
-						. implode ($sizes, "\n")
-						. "</select>\n"));
-		                $form_fields = array_merge( $form_fields, $sizes_array  );
+ 	                if( isset( $meta['sizes'] ) ) {
+		                // Loop through all potential sizes that may be chosen.
+	 	                foreach ( $possible_sizes as $size => $label ) {
+					if ( isset( $meta['sizes'][ $size ] ) ) {
+		                                if ( ! isset( $base_url ) )
+		                                        $base_url = str_replace( wp_basename( $attachment_url ), '', $attachment_url );
+		
+		                                // Nothing from the filter, so consult image metadata if we have it.
+		                                $size_meta = $meta['sizes'][ $size ];
+		
+		                                // We have the actual image size, but might need to further constrain it if content_width is narrower.
+		                                // Thumbnail, medium, and full sizes are also checked against the site's height/width options.
+		                                list( $width, $height ) = image_constrain_size_for_editor( $size_meta['width'], $size_meta['height'], $size, 'edit' );
+		
+		                                $sizes[ $size ] = "<option value='" . $size . "'>" . $possible_sizes[ $size ] . " - $width x $height</option>";
+		                        }
+		                }
+		                
+		                //add image size select if attachment has other images associated
+		                if (count ($sizes) > 0) {
+			                $sizes['link'] = "<option value='link' selected>Link Only</option>";
+		
+					$sizes_array = array(
+						'display_attachment_image_heading' => array(
+							'label'	=> __('<h3>Attachment Image</h3>', 'display_attachment_image'),
+							'input'	=> 'html',
+							'html'	=> ' '
+						),
+						'display_attachment_image' => array(
+							'label'	=> __('Sizes', 'display_attachment_image'),
+							'input'	=> 'html',
+							'html'	=> "<select class='size' name='attachments[$post->ID][display_attachment_image]' "
+								. "id='display_attachment_image-{$post->ID}' data-setting='size' data-user-setting='imgsize'>\n"
+								. implode ($sizes, "\n")
+								. "</select>\n"
+						));
+					
+
+			                $form_fields = array_merge( $form_fields, $sizes_array  );
+				}
 			}
 	        }
+
 	        return $form_fields;
 	}
-	add_filter('attachment_fields_to_edit', 'change_attachment_fields_to_edit', 20, 3);
-
+	add_filter('attachment_fields_to_edit', 'advupl_attachment_fields_to_edit', 20, 2);
+	
 	function save_display_attachment_image($post, $attachment_data) {
 		// use this filter to add post meta if key exists or delete it if not
 		if ( !empty($attachment_data['display_attachment_image']) && $attachment_data['display_attachment_image'] != 'link' )
