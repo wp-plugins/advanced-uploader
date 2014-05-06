@@ -67,7 +67,7 @@ Go to Settings -> Media to configure.
 = 1.4 =
 fixed pdf thumbnail selection & add heading above thumbnail selection
 = 1.3 =
-pdated to allow large uploads from editor
+updated to allow large uploads from editor
 = 1.2 =
 updated to work with wordpress 3.9
 = 1.1 =
