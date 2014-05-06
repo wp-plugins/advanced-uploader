@@ -65,11 +65,11 @@ Go to Settings -> Media to configure.
 
 == Upgrade Notice ==
 = 1.4 =
- * fixed pdf thumbnail selection & add heading above thumbnail selection
+fixed pdf thumbnail selection & add heading above thumbnail selection
 = 1.3 =
-* updated to allow large uploads from editor
+pdated to allow large uploads from editor
 = 1.2 =
-* updated to work with wordpress 3.9
+updated to work with wordpress 3.9
 = 1.1 =
 fixed bug that stopped plugin working when not replacing default
 = 1.0 =
