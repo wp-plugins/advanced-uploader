@@ -65,8 +65,7 @@ Go to Settings -> Media to configure.
 
 == Upgrade Notice ==
 = 1.4 =
-* fixed pdf thumbnail selection
-* add heading above thumbnail selection
+ * fixed pdf thumbnail selection & add heading above thumbnail selection
 = 1.3 =
 * updated to allow large uploads from editor
 = 1.2 =
