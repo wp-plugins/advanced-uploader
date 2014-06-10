@@ -33,7 +33,7 @@
 
 		// register style
 		wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'jquery-ui-advupl-style') );
-		wp_register_style( 'jquery-ui-advupl-style', plugins_url('/css/jquery-ui-1.10.4.min.css', __FILE__ ) );
+		wp_register_style( 'jquery-ui-advupl-style', plugins_url('/css/jquery-ui.min.css', __FILE__ ) );
 	}
 	
 	//function to recursively go through categories
@@ -81,7 +81,7 @@
 			//option to create new gallery
 			$destinations[] = Array ('label' => 'Create New Gallery',
 						 'dest' => $default_dir,
-					 	 'lib' => true,
+					 	 'library' => true,
 						 'type' => "Wordpress Gallery",
 						 'id' => 'new');
 						 
@@ -89,7 +89,7 @@
 			foreach( $galleries as $gallery ) {
 				$destinations[] = Array ('label' => $gallery->post_title,
 							 'dest' => $default_dir,
-						 	 'lib' => true,
+						 	 'library' => true,
 							 'type' => "Wordpress Gallery",
 							 'id' => $gallery->ID);
 			}
@@ -109,7 +109,7 @@
 				foreach ($query->posts as $post) {
 					$destinations[] = Array ('label' => $post->post_title,
 								 'dest' => $default_dir,
-							 	 'lib' => true,
+							 	 'library' => true,
 								 'type' => "BWS Gallery",
 								 'id' => $post->ID);
 				}
@@ -195,16 +195,16 @@
 
 		$index = 1;
 		foreach( $destinations as $dest ) {
-			if( !isset( $dest['error'] ) ) {
+			if( !isset( $dest['error'] ) && is_dir(ABSPATH . $dest['dest']) ) {
 				echo "destinations[" . $index . "] = new Array();\n";
 				echo "destinations[" . $index . "][0] = '" . $dest['label'] . "';\n";
 				echo "destinations[" . $index . "][1] = '" . $dest['dest'] . "';\n";
 				echo "destinations[" . $index . "][2] = '" . $dest['type'] . "';\n";
 				echo "destinations[" . $index . "][3] = '" . $dest['id'] . "';\n";
-				$lib = ($dest['lib']) ? "true" : "false";
+				$lib = ($dest['library']) ? "true" : "false";
 				echo "destinations[" . $index . "][4] = " .$lib . ";\n";
+				$index++;
 			}
-			$index++;
 		}
 
 		//show categories
@@ -342,7 +342,8 @@
 			
 			//Path to image attachment, relative to the currently configured uploads directory.
 			//need to add logic to check if the upload dir is organised into year/month.
-			$attach_data["file"] =  substr($upload_dir['subdir'],1) . '/' . urlencode($name);
+			$rel_path = str_replace ( $upload_dir['basedir'] . '/', '', $target_path );
+			$attach_data["file"] =  $rel_path . urlencode($name);
 			
 			$attach_data["sizes"] = $sizes;
 		} else {
@@ -546,14 +547,15 @@
 		if (isset($destinations) && $destinations)
 		    foreach ($destinations as $dest) {
 			if ($dest['error']) {
-				if ($dest['error'] == 'dest') {
+				if ($dest['error']['dest'])
 					$destStyle = "background-color: #ffebe8;";
-				}
+				if ($dest['error']['library'])
+					$libStyle = "background-color: #ffebe8;";
 			}
 			echo "<div id='adv_file_upload_destination_$index'  style='overflow:hidden;'>";
 			echo "<input id='adv_file_upload_destination_label_$index' name='adv_file_upload_destination[$index][label]' type='text' value='{$dest['label']}' style='float:left;width:135px;' />";
 			echo "<input id='adv_file_upload_destination_destination_$index' name='adv_file_upload_destination[$index][dest]' type='text' value='{$dest['dest']}' style='float:left;width:285px;$destStyle' />";
- 			echo "<input name='adv_file_upload_destination[$index][library]' id='adv_file_upload_destination_library_$index' type='checkbox' value='1' style='float:left;margin:5px;' " . checked( 1, $dest['library'], false ) . " />";
+ 			echo "<input name='adv_file_upload_destination[$index][library]' id='adv_file_upload_destination_library_$index' type='checkbox' value='1' style='float:left;margin:5px;$libStyle' " . checked( 1, $dest['library'], false ) . " />";
 			// add delete button
 			echo "<input type='button' name='del_dest' id='del_dest_$index' class='button button-primary' value='-' style='width:2.5em;float:right;' onClick='removeButton(this)'/>";
 			echo "</div>";
@@ -565,7 +567,8 @@
 		echo "<input type='hidden' id='index' value='$index' />";
 		echo '<input type="button" name="new_dest" id="new_dest" class="button button-primary" value="+" style="width:2.5em;float:right;" onClick="addButton(this)" />';
 		echo "</div>";
- 		echo "<p class='clear'><i>Note: Thumbnail images are only created when adding to Wordpress Library</i></p>";
+ 		echo "<p class='clear'><i>Note: Thumbnail images are only created when adding to Wordpress Library</i></br>";
+ 		echo "<i>Note: When adding to Wordpress Library your directory needs to be within the default upload directory</i></br></p>";
 	}
 	
 	// ------------------------------------------------------------------
@@ -580,16 +583,29 @@
 			return $input;
 		$valid_input = array();  
 		foreach ($input as $id => $dest) {
-			is_dir($dest['dest']);
-                        // register error  
-                        if(is_dir(ABSPATH . $dest['dest']) == FALSE) {  
+                        // register destination does not exist error  
+                        if( is_dir( ABSPATH . $dest['dest'] ) == FALSE ) {  
                                 add_settings_error(  
                                     'Destination', // setting title  
                                     0, // error ID  
                                     __('Expecting a valid directory! Please fix.','wptuts_textdomain'), // error message  
                                     'error' // type of message  
                                 );  
-                         	$valid_input[$id]['error'] = 'dest';
+                         	$valid_input[$id]['error']['dest'] = true;
+                         }
+                         
+                        // register destination does is not in uploads directory error 
+                        $upload_dir = wp_upload_dir(); //get upload base dir
+                        $default_dir = str_replace ( ABSPATH, '', $upload_dir['basedir'] ); //remove site root
+                        if( $dest['library'] && !preg_match( '#^' . $default_dir . '/#', $dest['dest'] ) 
+                            && !preg_match( '#^' . $default_dir . '$#', $dest['dest'] ) ) {  
+                                add_settings_error(  
+                                    'Destination', // setting title  
+                                    0, // error ID  
+                                    __('To add to Wordpress Library Destination must be in within uploads directory! Please fix.','wptuts_textdomain'), // error message  
+                                    'error' // type of message  
+                                );  
+                         	$valid_input[$id]['error']['library'] = true;
                          }
                          $valid_input[$id]['label'] = $dest['label'];
                          $valid_input[$id]['dest'] = rtrim($dest['dest'], "/");

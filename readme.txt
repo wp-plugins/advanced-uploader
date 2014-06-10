@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 3.9
-Stable tag: 1.4
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.5 =
+* fixed bug to allow add to library to work for non-default directory
 = 1.4 =
 * removed special character form pdf thumbnails in media libraray as it was causing errors
 * add heading above thumbnail selection
@@ -64,6 +66,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 1.5 =
+fixed bug to allow add to library to work for non-default directory
 = 1.4 =
 fixed pdf thumbnail selection & add heading above thumbnail selection
 = 1.3 =
