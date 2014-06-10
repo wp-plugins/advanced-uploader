@@ -66,15 +66,9 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
-= 1.5 =
-fixed bug to allow add to library to work for non-default directory
-= 1.4 =
-fixed pdf thumbnail selection & add heading above thumbnail selection
-= 1.3 =
-updated to allow large uploads from editor
-= 1.2 =
-updated to work with wordpress 3.9
-= 1.1 =
-fixed bug that stopped plugin working when not replacing default
-= 1.0 =
-Readme file added.
+= 1.5 = fixed bug to allow add to library to work for non-default directory
+= 1.4 = fixed pdf thumbnail selection & add heading above thumbnail selection
+= 1.3 = updated to allow large uploads from editor
+= 1.2 = updated to work with wordpress 3.9
+= 1.1 = fixed bug that stopped plugin working when not replacing default
+= 1.0 = Readme file added.
