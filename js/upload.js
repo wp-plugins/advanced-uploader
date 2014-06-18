@@ -157,10 +157,16 @@ plupload_defaults.preinit = {
 						array.push(binary.charCodeAt(i));
 					}
 					
-					var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
+					//get thumb extension
+					var thumbExt = respObj.data.name.split('.').pop();
+					if( thumbExt.match(/jpg/) )
+						var blob = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+					else
+						var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
 					fd.append('thumbs[]', blob, imageMeta[key].file);
 				}
 				
+				console.log(fd);
 				//update display to show message
 				var item = jQuery('#media-item-' + file.id);
 				jQuery('.percent', item).html( 'Completing Upload' );
@@ -182,6 +188,12 @@ plupload_defaults.preinit = {
 							try {
 								var respObj = JSON.parse( response);
 							} catch ( e ) {
+								up.trigger("FileUploaded", file, {'response':'media-upload-error'});
+								return;
+							}
+							
+							//check for errors
+							if( respObj.success == false ) {
 								up.trigger("FileUploaded", file, {'response':'media-upload-error'});
 								return;
 							}
@@ -413,7 +425,7 @@ var createThumbImage = function (file, name, callback, src) {
 		        tempH = Math.round(tempH);
 		        
 		        //set thumbnail filename
-		        var filename = name.replace(/\.(jpg|jpeg|png)$/i, "-"+tempW+"x"+tempH+".png");
+		        var filename = name.replace(/\.(jpg|jpeg|png)$/i, "-"+tempW+"x"+tempH+".jpg");
 		        
 		        if (nameslist.search(filename) == -1) {
 		        	nameslist += filename + ';';
@@ -424,7 +436,7 @@ var createThumbImage = function (file, name, callback, src) {
 			        ctx.drawImage(this, 0, 0, tempW, tempH);
 	
 			        keys.push(key);
-			        dataURL[key] = canvas.toDataURL("image/png");
+			        dataURL[key] = canvas.toDataURL("image/jpeg",0.9);
 		        }
 		        imageMeta[key] = new Object();
 		        imageMeta[key].file = filename;
