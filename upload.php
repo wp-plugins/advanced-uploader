@@ -947,7 +947,6 @@
 						wp_die();
 					}
 				} else {
-					error_log(print_r($_FILES['thumbs'],true));
 					echo json_encode( array(
 						'success' => false,
 						'data'    => array(
