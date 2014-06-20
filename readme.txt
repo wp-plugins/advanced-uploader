@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 3.9
-Stable tag: 1.5
+Stable tag: 1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,10 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.7 =
+* fixed bug with different server/php setting by making sure directory separator is present between dirctory and file name
+= 1.6 =
+* fixed bug with Firefox that caused a problem for some images to not upload the thumbnails
 = 1.5 =
 * fixed bug to allow add to library to work for non-default directory
 = 1.4 =
@@ -66,6 +70,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 1.7 = fixed bug with different server/php setting by making sure directory separator is present between dirctory and file name
+= 1.6 = fixed bug with Firefox that caused a problem for some images to not upload the thumbnails
 = 1.5 = fixed bug to allow add to library to work for non-default directory
 = 1.4 = fixed pdf thumbnail selection & add heading above thumbnail selection
 = 1.3 = updated to allow large uploads from editor

@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.4
+	Version: 1.7
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -342,7 +342,8 @@
 			
 			//Path to image attachment, relative to the currently configured uploads directory.
 			//need to add logic to check if the upload dir is organised into year/month.
-			$rel_path = str_replace ( $upload_dir['basedir'] . '/', '', $target_path );
+			$rel_path = str_replace ( $upload_dir['basedir'] . DIRECTORY_SEPARATOR, '', $target_path );
+			$rel_path = untrailingslashit( rel_path ) . DIRECTORY_SEPARATOR;
 			$attach_data["file"] =  $rel_path . urlencode($name);
 			
 			$attach_data["sizes"] = $sizes;
