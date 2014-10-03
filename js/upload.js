@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 1.3
+ * version : 1.4
  */
 'use strict';
 'use strict';
@@ -286,7 +286,7 @@ function convertBytes (num) {
 		units = 'GB'
 	}
 	
-	return num  + units;
+	return num + ' ' + units;
 }
 
 // do browser checks add listeners on document ready
@@ -327,7 +327,7 @@ jQuery(document).ready(function() {
 				
 		var upload_js = document.getElementById('tmpl-uploader-inline');
 		if (upload_js !== null) {
-			var pattern = new RegExp(max_file_size_display,'i');
+			var pattern = new RegExp(max_file_size_display+'|'+max_file_size_display.replace(/ /,''),'i');
 			var maxPos = upload_js.innerHTML.search(pattern);
 			var pPos = upload_js.innerHTML.indexOf('</p>', maxPos);
 
@@ -338,7 +338,7 @@ jQuery(document).ready(function() {
 		
 		var upload = jQuery('.max-upload-size').html();
 		if (typeof upload === 'string') {
-			var pattern = new RegExp(max_file_size_display,'i');
+			var pattern = new RegExp(max_file_size_display+'|'+max_file_size_display.replace(/ /,''),'i');
 			var maxPos = upload.search(pattern);
 			jQuery('.max-upload-size').html(upload.substring(0, maxPos)
 				+ max + upload.substring(maxPos+max_file_size_display.length))
