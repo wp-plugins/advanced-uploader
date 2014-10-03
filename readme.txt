@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.9
+Stable tag: 1.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.10 =
+* fixed display issue with max upload file size for wordpress 4.0, format of size had changed.
 = 1.9 =
 * Made code more robost to allow to work on stricter php installations
 * moved wp_register_script to admin_enqueue_scripts instead of admin_init
@@ -75,6 +77,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 1.10 = fixed display issue with max upload file size for wordpress 4.0, format of size had changed.
 = 1.9 = Made code more robost to allow to work on stricter php installations and removed some wordpress notices
 = 1.8 = fixed typo with missing $ in front of vairable name
 = 1.7 = fixed bug with different server/php setting by making sure directory separator is present between dirctory and file name
