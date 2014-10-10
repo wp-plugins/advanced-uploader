@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.11
+	Version: 1.12
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -864,7 +864,8 @@ else if (typeof _wpPluploadSettings === 'object')
 	var plupload_defaults = _wpPluploadSettings.defaults;
 
 max_file_size = parseInt(plupload_defaults.filters.max_file_size);
-if (adv_uploader) {
+
+if (typeof adv_uploader === 'boolean' && adv_uploader) {
 	plupload_defaults.filters.max_file_size = adv_max_file_size;
 }
 
