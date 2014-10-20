@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.12
+	Version: 1.13
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -853,6 +853,7 @@
 	//add functions to plupload default settings
 	function adv_pre_plupload($args) {
 		global $pagenow;
+		$screen = get_current_screen();
 ?>
 <script type="text/javascript">
 //add setting to uploader
@@ -1064,7 +1065,7 @@ plupload_defaults.preinit = {
 	}
 };
 <?php
-		if( $pagenow == 'media-new.php' || $pagenow == 'upload.php' )
+		if( $pagenow == 'media-new.php' || $screen->id == 'media_page_adv-file-upload' )
 			echo '</script>';
 		else
 			echo '</<# var scriptend=""#>script>';
