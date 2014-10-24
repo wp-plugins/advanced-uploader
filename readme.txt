@@ -50,6 +50,9 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.14 =
+* added support for replacing uploader in new library grid view 
+* added ability to select destination from post/library grid view
 = 1.13 =
 * fixed bug that broke uploads from Library page and showed code
 = 1.12 =
@@ -84,7 +87,9 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
-= 1.13 = fixed bug that broke uploads from Library page and showed code= 1.12 = fixed bug that meant some of the library functionality didn't
+= 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view
+= 1.13 = fixed bug that broke uploads from Library page and showed code
+= 1.12 = fixed bug that meant some of the library functionality didn't
 = 1.11 = fixed issues categories and with other plugins using wp_enqueue_media
 = 1.10 = fixed display issue with max upload file size for wordpress 4.0, format of size had changed.
 = 1.9 = Made code more robost to allow to work on stricter php installations and removed some wordpress notices

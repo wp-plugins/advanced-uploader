@@ -45,3 +45,7 @@
 	border-style: none none dashed;
 	margin: 10px 0px;
 }
+
+.advuplddialog {
+	z-index: 200001 !important;
+}

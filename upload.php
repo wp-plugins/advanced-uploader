@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.13
+	Version: 1.14
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -253,7 +253,7 @@
 		global $adv_file_upload_admin_page, $post;
 
 		if( !($adv_file_upload_admin_page == $hook || 
-			(($hook == 'media-new.php' || $hook == 'post-new.php' || $hook == 'post.php') && 
+			(($hook == 'media-new.php' || $hook == 'post-new.php' || $hook == 'post.php' || $hook == 'upload.php') && 
 				get_option('adv_file_upload_replace_default'))) 
 			|| (is_object($post) && $post->post_type == "attachment" ))
 			return;
@@ -854,225 +854,29 @@
 	function adv_pre_plupload($args) {
 		global $pagenow;
 		$screen = get_current_screen();
-?>
-<script type="text/javascript">
-//add setting to uploader
-//add media page
-if (typeof wpUploaderInit === 'object')
-	var plupload_defaults = wpUploaderInit;
-//edit post/page
-else if (typeof _wpPluploadSettings === 'object')
-	var plupload_defaults = _wpPluploadSettings.defaults;
 
-max_file_size = parseInt(plupload_defaults.filters.max_file_size);
-
-if (typeof adv_uploader === 'boolean' && adv_uploader) {
-	plupload_defaults.filters.max_file_size = adv_max_file_size;
-}
-
-plupload_defaults.preinit = {
-	PostInit: function(up) {
-		var uploaddiv = jQuery('#plupload-upload-ui');
-		if (uploaddiv.length != 0) {
-			setResize( getUserSetting('upload_resize', false) );
-	
-			if ( up.features.dragdrop && ! jQuery(document.body).hasClass('mobile') ) {
-				uploaddiv.addClass('drag-drop');
-				jQuery('#drag-drop-area').bind('dragover.wp-uploader', function(){ // dragenter doesn't fire right :(
-					uploaddiv.addClass('drag-over');
-				}).bind('dragleave.wp-uploader, drop.wp-uploader', function(){
-					uploaddiv.removeClass('drag-over');
-				});
-			} else {
-				uploaddiv.removeClass('drag-drop');
-				jQuery('#drag-drop-area').unbind('.wp-uploader');
-			}
-	
-			if ( up.runtime == 'html4' )
-				jQuery('.upload-flash-bypass').hide();
+		if( $pagenow == 'media-new.php' || $screen->id == 'media_page_adv-file-upload' ) {
+			echo "<script type='text/javascript'>\n";
+			echo "adv_plupload_defaults();\n";
+			echo "</script>\n";
 		}
-		
-		default_action = up.settings.multipart_params['action'];
-		default_url = up.settings.url;
-		up_plupload = up;
-		jQuery('.drop-instructions').show();
-		up.settings.drop_element[0].addEventListener('dragenter', function (e) {
-			var dragdisplay = document.getElementsByClassName('uploader-window');
-			if (dragdisplay.length>0) {
-				dragdisplay[0].style.display = 'block';
-				dragdisplay[0].style.opacity = 1;
-				dragdisplay[0].addEventListener('dragleave', function (e) {
-					dragdisplay[0].style.display = 'none';
-					dragdisplay[0].style.opacity = 0;
-				}, false);
-				dragdisplay[0].addEventListener('drop', function (e) {
-					dragdisplay[0].style.display = 'none';
-					dragdisplay[0].style.opacity = 0;
-				}, false);
-			}
-		}, false);
-
-		//disable plupload image resize
-		up.settings.resize = new Object;
-		up.settings.resize.enabled = false;
-
-		if (adv_uploader) {
-			up.settings.chunk_size = max_file_size;
-			up.settings.filters.max_file_size = adv_max_file_size;
-		}
-	},
-	FilesAdded: function(up, files) {
-		if (adv_uploader) {
-			up.settings.url = ajaxurl;
-			up.settings.multipart_params['destinations'] = JSON.stringify(destinations);
-			up.settings.multipart_params['action'] = 'adv_upload_plupload';
-			up.settings.multipart_params['security'] = security;
-
-			if( typeof wpUploaderInit === 'object'  && typeof files[0].dest === 'undefined' ) {
-				selectDestination (files, function () {
-					up.trigger("FilesAdded", files);
-				});
-				return false;
-			} else if (typeof files[0].dest === 'undefined' ) {
-				for( var i=0; i<files.length; i++)
-					files[i].dest = 0;
-			}
-		} else {
-			up.settings.url = default_url;
-			up.settings.max_retries = 0;
-			delete up.settings.multipart_params['destinations'];
-			up.settings.multipart_params['action'] = default_action;
-			delete up.settings.multipart_params['security'];
-		}
-	},
-	BeforeUpload: function(up, file) {
-		if (adv_uploader) {
-			up.settings.multipart_params['fileDest'] = file.dest;
-			up.settings.multipart_params['album'] = file.album;
-		}
-	},
-	FileUploaded: function( up, file, response ) {
-		if (adv_uploader) {
-			var uploadFileThumbs = function (dataURL, imageMeta, keys) {
-				var fd = new FormData();
-				fd.append('action', 'adv_file_upload_thumbs');
-				fd.append('security', security);
-				fd.append('filename', respObj.data.name);
-
-				if (typeof _wpPluploadSettings === 'object')
-					fd.append('post_id', wp.media.model.settings.post.id);
-				fd.append('meta', JSON.stringify(imageMeta));
-				fd.append('fileDest', file.dest);
-				fd.append('album', file.album);
-				fd.append('destinations', JSON.stringify(destinations));
-
-				for (var index=0; index<keys.length; index++) {
-					var key = keys[index];
-					var binary = atob(dataURL[key].split(',')[1]);
-					var array = [];
-					for(var i = 0; i < binary.length; i++) {
-						array.push(binary.charCodeAt(i));
-					}
-					
-					//get thumb extension
-					var thumbExt = respObj.data.name.split('.').pop();
-					if( thumbExt.match(/jpg/) )
-						var blob = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
-					else
-						var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
-					fd.append('thumbs[]', blob, imageMeta[key].file);
-				}
-				
-				console.log(fd);
-				//update display to show message
-				var item = jQuery('#media-item-' + file.id);
-				jQuery('.percent', item).html( 'Completing Upload' );
-				
-				//upload thumbs and add file to WP Libraray
-				jQuery.ajax({	'type': "post",
-						'url': ajaxurl,
-						'data': fd,
-						'enctype': 'multipart/form-data',
-						'encoding': 'multipart/form-data',
-						'cache': false,
-						'processData': false,
-						'contentType': false
-				}).done(function (response) {
-					if (typeof response === 'string' && response != '') {
-						if (typeof wpUploaderInit === 'object') {
-							try {
-								var respObj = JSON.parse( response);
-							} catch ( e ) {
-								up.trigger("FileUploaded", file, {'response':'media-upload-error'});
-								return;
-							}
-							
-							//check for errors
-							if( respObj.success == false ) {
-								up.trigger("FileUploaded", file, {'response':'media-upload-error'});
-								return;
-							}
-							
-							//id only returned if add to Wordpress Library
-							if( respObj.data.id == false ) {
-								var id = respObj.data.id;
-								jQuery('#media-item-' + file.id + ' .progress').remove();
-								jQuery('#media-item-' + file.id + ' .original').remove();
-								jQuery( '<img>' ).attr({
-									src: respObj.data.url,
-									class: 'pinkynail'
-									}).appendTo( '#media-item-' + file.id );
-								jQuery( '<div>' ).attr({
-									class: 'filename new'
-									}).html(respObj.data.name).appendTo( '#media-item-' + file.id );
-							} else
-								var id = respObj.data.id.toString();
-							
-							up.trigger("FileUploaded", file, {'response':id});
-						} else
-							up.trigger("FileUploaded", file, {'response':response});
-					}
-				});
-			};
-
-			try {
-				var respObj = JSON.parse( response.response );
-			} catch ( e ) {
-				return;
-			}
-
-			if (respObj.success == 'file_complete') {
-				//get file extension
-				var ext = respObj.data.name.split('.').pop();
-
-				//is image create thumbnail
-				if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png/i)) {
-					//update display to show message
-					var item = jQuery('#media-item-' + file.id);
-					jQuery('.percent', item).html( 'Creating thumbs' );
-					createThumbImage (file, respObj.data.name, uploadFileThumbs, respObj.data.file);
-				//is pdf create thumbnail
-				} else if(destinations[file.dest][4] &&  ext.match(/pdf/i)) {
-					var item = jQuery('#media-item-' + file.id);
-					jQuery('.percent', item).html( 'Creating thumbs' );
-					pdf (respObj.data.file, respObj.data.name, uploadFileThumbs);
-				} else
-					uploadFileThumbs (null, null, new Array());
-
-				return false;
-			}
-		};
-	}
-};
-<?php
-		if( $pagenow == 'media-new.php' || $screen->id == 'media_page_adv-file-upload' )
-			echo '</script>';
-		else
-			echo '</<# var scriptend=""#>script>';
-
 		return $args;
 	}
 	add_action( 'pre-plupload-upload-ui', 'adv_pre_plupload');
+
+	function adv_plupload_default_script () {
+		global $wp_scripts;
+		$script = "adv_plupload_defaults();\n";
+
+		$data = $wp_scripts->get_data( 'wp-plupload', 'data' );
+		if ( $data )
+			$wp_scripts->add_data( 'wp-plupload', 'data', "$data\n$script" );
+			
+		$data = $wp_scripts->get_data( 'plupload-handlers', 'data' );
+		if ( $data )
+			$wp_scripts->add_data( 'plupload-handlers', 'data', "$data\n$script" );
+	}
+	add_action( 'admin_footer', 'adv_plupload_default_script');
 
 	//create new post
 	function adv_upload_new_post () {
