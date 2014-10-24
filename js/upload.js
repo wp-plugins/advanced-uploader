@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 1.5
+ * version : 1.6
  */
 'use strict';
 'use strict';
@@ -44,6 +44,222 @@ msgProgressDiv.appendChild(msgProgress);
 var registerLog = function (str, className) {
     jQuery('<div class="'+className+'">'+str+'</div>').appendTo('#log');
 };
+
+function adv_plupload_defaults () {
+	//add setting to uploader
+	var adv_preinit = {
+		PostInit: function(up) {
+			var uploaddiv = jQuery('#plupload-upload-ui');
+			if (uploaddiv.length != 0) {
+				setResize( getUserSetting('upload_resize', false) );
+		
+				if ( up.features.dragdrop && ! jQuery(document.body).hasClass('mobile') ) {
+					uploaddiv.addClass('drag-drop');
+					jQuery('#drag-drop-area').bind('dragover.wp-uploader', function(){ // dragenter doesn't fire right :(
+						uploaddiv.addClass('drag-over');
+					}).bind('dragleave.wp-uploader, drop.wp-uploader', function(){
+						uploaddiv.removeClass('drag-over');
+					});
+				} else {
+					uploaddiv.removeClass('drag-drop');
+					jQuery('#drag-drop-area').unbind('.wp-uploader');
+				}
+		
+				if ( up.runtime == 'html4' )
+					jQuery('.upload-flash-bypass').hide();
+			}
+			
+			default_action = up.settings.multipart_params['action'];
+			default_url = up.settings.url;
+			up_plupload = up;
+			jQuery('.drop-instructions').show();
+			up.settings.drop_element[0].addEventListener('dragenter', function (e) {
+				var dragdisplay = document.getElementsByClassName('uploader-window');
+				if (dragdisplay.length>0) {
+					dragdisplay[0].style.display = 'block';
+					dragdisplay[0].style.opacity = 1;
+					dragdisplay[0].addEventListener('dragleave', function (e) {
+						dragdisplay[0].style.display = 'none';
+						dragdisplay[0].style.opacity = 0;
+					}, false);
+					dragdisplay[0].addEventListener('drop', function (e) {
+						dragdisplay[0].style.display = 'none';
+						dragdisplay[0].style.opacity = 0;
+					}, false);
+				}
+			}, false);
+	
+			//disable plupload image resize
+			up.settings.resize = new Object;
+			up.settings.resize.enabled = false;
+	
+			if (adv_uploader) {
+				up.settings.chunk_size = max_file_size;
+				up.settings.filters.max_file_size = adv_max_file_size;
+			}
+		},
+		FilesAdded: function(up, files) {
+			if (adv_uploader) {
+				up.settings.url = ajaxurl;
+				up.settings.multipart_params['destinations'] = JSON.stringify(destinations);
+				up.settings.multipart_params['action'] = 'adv_upload_plupload';
+				up.settings.multipart_params['security'] = security;
+	
+				var lib_only = true;
+				if( typeof files[0].dest === 'undefined' ) {
+					if( typeof wpUploaderInit === 'object' )
+						lib_only = false;
+					selectDestination (lib_only, files, function () {
+						up.trigger("FilesAdded", files);
+					});
+					return false;
+				} else if (typeof files[0].dest === 'undefined' ) {
+					for( var i=0; i<files.length; i++)
+						files[i].dest = 0;
+				}
+			} else {
+				up.settings.url = default_url;
+				up.settings.max_retries = 0;
+				delete up.settings.multipart_params['destinations'];
+				up.settings.multipart_params['action'] = default_action;
+				delete up.settings.multipart_params['security'];
+			}
+		},
+		BeforeUpload: function(up, file) {
+			if (adv_uploader) {
+				up.settings.multipart_params['fileDest'] = file.dest;
+				up.settings.multipart_params['album'] = file.album;
+			}
+		},
+		FileUploaded: function( up, file, response ) {
+			if (adv_uploader) {
+				var uploadFileThumbs = function (dataURL, imageMeta, keys) {
+					var fd = new FormData();
+					fd.append('action', 'adv_file_upload_thumbs');
+					fd.append('security', security);
+					fd.append('filename', respObj.data.name);
+	
+					if (typeof _wpPluploadSettings === 'object')
+						fd.append('post_id', wp.media.model.settings.post.id);
+					fd.append('meta', JSON.stringify(imageMeta));
+					fd.append('fileDest', file.dest);
+					fd.append('album', file.album);
+					fd.append('destinations', JSON.stringify(destinations));
+	
+					for (var index=0; index<keys.length; index++) {
+						var key = keys[index];
+						var binary = atob(dataURL[key].split(',')[1]);
+						var array = [];
+						for(var i = 0; i < binary.length; i++) {
+							array.push(binary.charCodeAt(i));
+						}
+						
+						//get thumb extension
+						var thumbExt = respObj.data.name.split('.').pop();
+						if( thumbExt.match(/jpg/) )
+							var blob = new Blob([new Uint8Array(array)], {type: 'image/jpeg'});
+						else
+							var blob = new Blob([new Uint8Array(array)], {type: 'image/png'});
+						fd.append('thumbs[]', blob, imageMeta[key].file);
+					}
+					
+					console.log(fd);
+					//update display to show message
+					var item = jQuery('#media-item-' + file.id);
+					jQuery('.percent', item).html( 'Completing Upload' );
+					
+					//upload thumbs and add file to WP Libraray
+					jQuery.ajax({	'type': "post",
+							'url': ajaxurl,
+							'data': fd,
+							'enctype': 'multipart/form-data',
+							'encoding': 'multipart/form-data',
+							'cache': false,
+							'processData': false,
+							'contentType': false
+					}).done(function (response) {
+						if (typeof response === 'string' && response != '') {
+							if (typeof wpUploaderInit === 'object') {
+								try {
+									var respObj = JSON.parse( response);
+								} catch ( e ) {
+									up.trigger("FileUploaded", file, {'response':'media-upload-error'});
+									return;
+								}
+								
+								//check for errors
+								if( respObj.success == false ) {
+									up.trigger("FileUploaded", file, {'response':'media-upload-error'});
+									return;
+								}
+								
+								//id only returned if add to Wordpress Library
+								if( respObj.data.id == false ) {
+									var id = respObj.data.id;
+									jQuery('#media-item-' + file.id + ' .progress').remove();
+									jQuery('#media-item-' + file.id + ' .original').remove();
+									jQuery( '<img>' ).attr({
+										src: respObj.data.url,
+										class: 'pinkynail'
+										}).appendTo( '#media-item-' + file.id );
+									jQuery( '<div>' ).attr({
+										class: 'filename new'
+										}).html(respObj.data.name).appendTo( '#media-item-' + file.id );
+								} else
+									var id = respObj.data.id.toString();
+								
+								up.trigger("FileUploaded", file, {'response':id});
+							} else
+								up.trigger("FileUploaded", file, {'response':response});
+						}
+					});
+				};
+	
+				try {
+					var respObj = JSON.parse( response.response );
+				} catch ( e ) {
+					return;
+				}
+	
+				if (respObj.success == 'file_complete') {
+					//get file extension
+					var ext = respObj.data.name.split('.').pop();
+	
+					//is image create thumbnail
+					if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png/i)) {
+						//update display to show message
+						var item = jQuery('#media-item-' + file.id);
+						jQuery('.percent', item).html( 'Creating thumbs' );
+						createThumbImage (file, respObj.data.name, uploadFileThumbs, respObj.data.file);
+					//is pdf create thumbnail
+					} else if(destinations[file.dest][4] &&  ext.match(/pdf/i)) {
+						var item = jQuery('#media-item-' + file.id);
+						jQuery('.percent', item).html( 'Creating thumbs' );
+						pdf (respObj.data.file, respObj.data.name, uploadFileThumbs);
+					} else
+						uploadFileThumbs (null, null, new Array());
+	
+					return false;
+				}
+			};
+		}
+	};
+	
+	//add media page
+	if (typeof wpUploaderInit === 'object') {
+		wpUploaderInit.preinit  = adv_preinit;
+		max_file_size = parseInt(wpUploaderInit.filters.max_file_size);
+		if (typeof adv_uploader === 'boolean' && adv_uploader)
+			wpUploaderInit.filters.max_file_size = adv_max_file_size;
+	}
+	//edit post/page
+	if (typeof _wpPluploadSettings === 'object') {
+		_wpPluploadSettings.defaults.preinit  = adv_preinit;
+		max_file_size = parseInt(_wpPluploadSettings.defaults.filters.max_file_size);
+		if (typeof adv_uploader === 'boolean' && adv_uploader)
+			_wpPluploadSettings.defaults.filters.max_file_size = adv_max_file_size;
+	}
+}
 
 function toggle_loader (loader) {
 	if (loader == 'default') {
@@ -103,10 +319,6 @@ jQuery(document).ready(function() {
 
 	//create checkbox for changing which uploader is used 
 	if (adv_replace_default) {
-		//edit post/page
-		if (typeof _wpPluploadSettings === 'object')
-			max_file_size = parseInt(_wpPluploadSettings.defaults.filters.max_file_size);
-
 		max_file_size_display = convertBytes (max_file_size);
 		adv_max_file_size_display = convertBytes (adv_max_file_size);
 		
@@ -353,23 +565,38 @@ function handleDragLeave(evt) {
 	evt.currentTarget.classList.remove('drag-over');
 }
 
-function selectDestination (files, callback) {
+function selectDestination (lib_only, files, callback) {
 	if (files.length == 0) {
 	        return;
+	}
+
+	var lib_only_dest = 0;
+	if(lib_only)
+		for (var i=0; i<destinations.length; i++)
+			if (destinations[i][4])
+				lib_only_dest++;
+
+	if (destinations.length == 1 || lib_only_dest == 1) {
+		for( var i=0; i<files.length; i++)
+			files[i].dest = 0;
+		callback();
+		return;
 	}
     
 	//destinations options
 	var options = '<option value="">Select Destination</option>';
 	var group = "";
 	for (var i=0; i<destinations.length; i++) {
-		if (group != destinations[i][2]) {
-			if (group != "") {
-				options += '</optgroup>'
+		if (!lib_only || (lib_only && destinations[i][4])) {
+			if (group != destinations[i][2]) {
+				if (group != "") {
+					options += '</optgroup>'
+				}
+				options += '<optgroup label="' + destinations[i][2] + '">';
 			}
-			options += '<optgroup label="' + destinations[i][2] + '">';
+			options += '<option value="' + i + '">' + destinations[i][0] + '</option>';
+			group = destinations[i][2];
 		}
-		options += '<option value="' + i + '">' + destinations[i][0] + '</option>';
-		group = destinations[i][2];
 	}
 
 	if (group != "") {
@@ -383,10 +610,13 @@ function selectDestination (files, callback) {
 	}
 
 	//content for popup
+	var content = '';
+	if(lib_only && destinations.length > lib_only_dest)
+		content += '<i>Can only upload to Library from this page.</i>';
 	if (files.length > 1)
-		var content = '<p>Select destination for all files';
+		content += '<p>Select destination for all files';
 	else
-		var content = '<p>Select destination for ' + files[0].name;
+		content += '<p>Select destination for ' + files[0].name;
 	content  += '<select id="dest">';
 	content  += options;
 	content  += '</select>';
@@ -584,12 +814,13 @@ function selectDestination (files, callback) {
 	jQuery(document).on( 'change', '.ui-dialog select', addBoxCheck);
 
 	dlg.dialog({
-		'title' : 'Destination',
-		'width' : 'auto',
-		'modal' : true,
-		'autoOpen' : false,
-		'closeOnEscape' : true,
-		'buttons' : [{
+		title    : 'Destination',
+		dialogClass : 'advuplddialog',
+		width    : 'auto',
+		modal    : true,
+		autoOpen : false,
+		closeOnEscape : true,
+		buttons : [{
 			'text' : 'Cancel',
 			'class' : 'button-primary',
 			'click' : function() {
@@ -600,7 +831,7 @@ function selectDestination (files, callback) {
 			'class' : 'button-primary',
 			'click' : select
 		}],
-		'close' : function () {
+		close : function () {
 			jQuery(document).off( 'change', '.ui-dialog select', addBoxCheck);
 			jQuery('.ui-widget-overlay').remove();
 			jQuery('.ui-dialog').remove();

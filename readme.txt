@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.12
+Stable tag: 1.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 1.14 =
+* added support for replacing uploader in new library grid view 
+* added ability to select destination from post/library grid view
+= 1.13 =
+* fixed bug that broke uploads from Library page and showed code
 = 1.12 =
 * fixed bug that meant some of the library functionality didn't because variable as initalisation code exists on addtional pages. 
 = 1.11 =
@@ -82,6 +87,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view
+= 1.13 = fixed bug that broke uploads from Library page and showed code
 = 1.12 = fixed bug that meant some of the library functionality didn't
 = 1.11 = fixed issues categories and with other plugins using wp_enqueue_media
 = 1.10 = fixed display issue with max upload file size for wordpress 4.0, format of size had changed.
