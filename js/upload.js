@@ -105,7 +105,6 @@ function adv_plupload_defaults () {
 				up.settings.multipart_params['action'] = 'adv_upload_plupload';
 				up.settings.multipart_params['security'] = security;
 	
-				//if( typeof wpUploaderInit === 'object'  && typeof files[0].dest === 'undefined' ) {
 				var lib_only = true;
 				if( typeof files[0].dest === 'undefined' ) {
 					if( typeof wpUploaderInit === 'object' )
@@ -320,10 +319,6 @@ jQuery(document).ready(function() {
 
 	//create checkbox for changing which uploader is used 
 	if (adv_replace_default) {
-		//edit post/page
-		if (typeof _wpPluploadSettings === 'object')
-			max_file_size = parseInt(_wpPluploadSettings.defaults.filters.max_file_size);
-
 		max_file_size_display = convertBytes (max_file_size);
 		adv_max_file_size_display = convertBytes (adv_max_file_size);
 		
