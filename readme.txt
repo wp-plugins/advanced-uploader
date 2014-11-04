@@ -50,6 +50,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.01 =
+* corrected error in minified javascript file
 = 2.0 =
 * added error handling for chunk uploading
 * fixed bug to keep psot withing threshold when sending file data with post information
@@ -90,6 +92,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.01 = corrected error in minified javascript file
 = 2.0 = added error handling for chunk uploading
 = 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view
 = 1.13 = fixed bug that broke uploads from Library page and showed code
