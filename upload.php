@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 1.14
+	Version: 2.01
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -1088,7 +1088,32 @@
 	function adv_upload_plupload() {
 		//check nounce is correct
 		check_ajax_referer('alt_upl_nonce' . get_current_user_id(),'security');
-
+		
+		if ( $_FILES['async-upload']['error'] == 1 ) {
+			$displayMaxSize = ini_get('upload_max_filesize');
+			
+			switch ( substr($displayMaxSize,-1) ) {
+				case 'G':
+					$displayMaxSize = $displayMaxSize * 1024;
+				case 'M':
+					$displayMaxSize = $displayMaxSize * 1024;
+				case 'K':
+					$displayMaxSize = $displayMaxSize * 1024;
+			}
+			
+			$error = 'Posted data is too large. '.$_SERVER[CONTENT_LENGTH].' bytes exceeds the maximum size of '.$displayMaxSize.' bytes.';
+			echo json_encode( array(
+				'success' => false,
+				'data'    => array(
+					'message'  => $error,
+					'code'  => 105,
+					'filename' => $_FILES['async-upload']['name'],
+				)
+			) );
+	
+			wp_die();
+		}
+		
 		// Settings
 		$cleanupTargetDir = true; // Remove old files
 		$maxFileAge = 5 * 3600; // Temp file age in seconds
@@ -1257,7 +1282,7 @@
 		}
 		
 		echo json_encode( array(
-			'success' => null,
+			'success' => true,
 			'data'    => array(
 				'filename' => $_FILES['async-upload']['name'],
 			)

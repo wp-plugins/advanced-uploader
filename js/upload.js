@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 1.6
+ * version : 2.0
  */
 'use strict';
 'use strict';
@@ -94,7 +94,7 @@ function adv_plupload_defaults () {
 			up.settings.resize.enabled = false;
 	
 			if (adv_uploader) {
-				up.settings.chunk_size = max_file_size;
+				up.settings.chunk_size = max_file_size - 2048; //removing 2kbytes to allow for size of post data.
 				up.settings.filters.max_file_size = adv_max_file_size;
 			}
 		},
@@ -242,6 +242,20 @@ function adv_plupload_defaults () {
 					return false;
 				}
 			};
+		},
+		Error: function(up, err) {
+			alert();
+		},
+		ChunkUploaded: function(up, file, info) {
+			var response = jQuery.parseJSON(info.response);
+			
+			if (response && !response.success)
+                        {
+				file.status = plupload.FAILED;
+				up.trigger('QueueChanged', file);
+				var text = {response: "<div class='media-upload-error'><B>"+file.name+"</B> "+response.data.message+"</div>"}
+				up.trigger('FileUploaded', file, text);
+			}
 		}
 	};
 	
@@ -378,7 +392,7 @@ function show_hide_uploader (e) {
 	if (adv_checkbox.checked) {
 		adv_uploader = true;
 		up_plupload.settings.filters.max_file_size = adv_max_file_size;
-		up_plupload.settings.chunk_size = max_file_size;			
+		up_plupload.settings.chunk_size = max_file_size - 2048; //removing 2kbytes to allow for size of post data.			
 		var max = jQuery('.max-upload-size').html();
 		max = max.replace (max_file_size_display, adv_max_file_size_display);
 		jQuery('.max-upload-size').html(max);

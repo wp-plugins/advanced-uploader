@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 1.14
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,11 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.01 =
+* corrected error in minified javascript file
+= 2.0 =
+* added error handling for chunk uploading
+* fixed bug to keep psot withing threshold when sending file data with post information
 = 1.14 =
 * added support for replacing uploader in new library grid view 
 * added ability to select destination from post/library grid view
@@ -87,6 +92,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.01 = corrected error in minified javascript file
+= 2.0 = added error handling for chunk uploading
 = 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view
 = 1.13 = fixed bug that broke uploads from Library page and showed code
 = 1.12 = fixed bug that meant some of the library functionality didn't
