@@ -594,7 +594,7 @@
                                 add_settings_error(  
                                     'Destination', // setting title  
                                     0, // error ID  
-                                    __('Expecting a valid directory! Please fix.','wptuts_textdomain'), // error message  
+                                    __('Expecting a valid directory! Please fix, the directory needs to exist in the filesystem first.','wptuts_textdomain'), // error message  
                                     'error' // type of message  
                                 );  
                          	$valid_input[$id]['error']['dest'] = true;
