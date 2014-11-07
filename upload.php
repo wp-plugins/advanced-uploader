@@ -56,7 +56,7 @@
 	function adv_admin_inline_js($hook) {
 		global $adv_file_upload_admin_page, $wpdb;
 		//get plugin's options
-  		$destinations = get_option('adv_file_upload_destination');
+  		$destinations = get_option('adv_file_upload_destination', array());
   		$gallery = get_option('adv_file_upload_gallery');
   		$bws = get_option('adv_file_upload_bws');
   		$cat = get_option('adv_file_upload_cat');
@@ -168,7 +168,11 @@
                 global $_wp_additional_image_sizes;
 
 		echo "var sizes = new Array();\n";
-                foreach ( get_intermediate_image_sizes() as $s ) {
+		$intermediate_sizes = get_intermediate_image_sizes();
+		if (!is_array($intermediate_sizes)) {
+			$intermediate_sizes = array();
+		}
+		foreach ( $intermediate_sizes as $s ) {
 			echo "sizes['" . $s . "'] = new Array();\n";
 
                         if ( isset( $_wp_additional_image_sizes[$s]['width'] ) )
