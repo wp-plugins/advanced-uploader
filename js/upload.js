@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 2.0
+ * version : 2.1
  */
 'use strict';
 'use strict';
@@ -829,7 +829,7 @@ function selectDestination (lib_only, files, callback) {
 
 	dlg.dialog({
 		title    : 'Destination',
-		dialogClass : 'advuplddialog',
+		dialogClass : 'wp-dialog',
 		width    : 'auto',
 		modal    : true,
 		autoOpen : false,
@@ -846,10 +846,7 @@ function selectDestination (lib_only, files, callback) {
 			'click' : select
 		}],
 		close : function () {
-			jQuery(document).off( 'change', '.ui-dialog select', addBoxCheck);
-			jQuery('.ui-widget-overlay').remove();
-			jQuery('.ui-dialog').remove();
-			jQuery('.ui-autocomplete').remove();
+			jQuery(this).dialog('destroy').remove();
 		}});
 	dlg.dialog('open');
 }
