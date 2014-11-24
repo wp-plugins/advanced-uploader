@@ -253,7 +253,7 @@ function adv_plupload_defaults () {
                         {
 				file.status = plupload.FAILED;
 				up.trigger('QueueChanged', file);
-				var text = {response: "<div class='media-upload-error'><B>"+file.name+"</B> "+response.data.message+"</div>"}
+				var text = {response: "<div class='media-upload-error'><B>"+file.name+"</B> "+response.data.message+"</div>"};
 				up.trigger('FileUploaded', file, text);
 			}
 		}
@@ -270,6 +270,7 @@ function adv_plupload_defaults () {
 	if (typeof _wpPluploadSettings === 'object') {
 		_wpPluploadSettings.defaults.preinit  = adv_preinit;
 		max_file_size = parseInt(_wpPluploadSettings.defaults.filters.max_file_size);
+		updatehtml();
 		if (typeof adv_uploader === 'boolean' && adv_uploader)
 			_wpPluploadSettings.defaults.filters.max_file_size = adv_max_file_size;
 	}
@@ -311,8 +312,13 @@ function convertBytes (num) {
 	return num + ' ' + units;
 }
 
-// do browser checks add listeners on document ready
 jQuery(document).ready(function() {
+	if( max_file_size > 0 )
+		updatehtml();
+});
+
+// update the page HMTL so that page works correctly with plugin.
+function updatehtml () {
 	jQuery('.media-upload-form').on('click.uploader', function(e) {
 		var target = jQuery(e.target);
 
@@ -332,7 +338,7 @@ jQuery(document).ready(function() {
 	});
 
 	//create checkbox for changing which uploader is used 
-	if (adv_replace_default) {
+	if (adv_replace_default && max_file_size > 0) {
 		max_file_size_display = convertBytes (max_file_size);
 		adv_max_file_size_display = convertBytes (adv_max_file_size);
 		
@@ -375,7 +381,7 @@ jQuery(document).ready(function() {
 					jQuery('#adv_uploader_checkbox_p').click();
 		});
 	}
-});
+}
 
 function show_hide_uploader (e) {
 	if (e.target.id.indexOf('adv_uploader_checkbox') == -1)

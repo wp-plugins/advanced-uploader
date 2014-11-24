@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.02
+	Version: 2.03
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -23,16 +23,16 @@
 		// Register main scripts
 		// if replacing default uploader make sure plupload is dependant on upload.js
 		if( get_option('adv_file_upload_replace_default') ) {
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.1');
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.2');
 			//add upload.js to the dependaces for plupload
-			global $wp_scripts;
+			/*global $wp_scripts;
 			
 			$plupload_script = $wp_scripts->query( 'plupload', 'registered' );
 			if( is_object( $plupload_script ) )
 				if( !in_array( 'adv-file-upload', $plupload_script->deps ) )
-					$plupload_script->deps[] = 'adv-file-upload';
+					$plupload_script->deps[] = 'adv-file-upload';*/
 		} else
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload2', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.1');
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload2', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.2');
 		
 		//TBD wp_register_script( 'spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 		wp_register_script( 'pdf-js', plugins_url('/js/pdf.js', __FILE__) );
@@ -217,51 +217,51 @@
                                 $js_var .= "sizes['" . $s . "']['crop'] = '" . get_option( "{$s}_crop" ) . "';\n"; // For default sizes set in options
                 }
 
-		$js_var .= "var destinations = new Array();\n";
+		$js_var .= 'var destinations = new Array();'."\n";
 		//add default location
 		$js_var .= "destinations[0] = new Array();\n";
-		$js_var .= "destinations[0][0] = 'Default';\n";
-		$js_var .= "destinations[0][1] = '$default_dir';\n";
-		$js_var .= "destinations[0][2] = '';\n";
-		$js_var .= "destinations[0][3] = '';\n";
-		$js_var .= "destinations[0][4] = true;\n";
+		$js_var .= "destinations[0][0] = \"Default\";\n";
+		$js_var .= 'destinations[0][1] = "'.$default_dir."\";\n";
+		$js_var .= 'destinations[0][2] = "";'."\n";
+		$js_var .= 'destinations[0][3] = "";'."\n";
+		$js_var .= 'destinations[0][4] = true;'."\n";
 
 		$index = 1;
 		foreach( $destinations as $dest ) {
 			if( !isset( $dest['error'] ) && is_dir(ABSPATH . $dest['dest']) ) {
-				$js_var .= "destinations[" . $index . "] = new Array();\n";
-				$js_var .= "destinations[" . $index . "][0] = '" . $dest['label'] . "';\n";
-				$js_var .= "destinations[" . $index . "][1] = '" . $dest['dest'] . "';\n";
-				$js_var .= "destinations[" . $index . "][2] = '" . $dest['type'] . "';\n";
-				$js_var .= "destinations[" . $index . "][3] = '" . $dest['id'] . "';\n";
+				$js_var .= 'destinations[' . $index . '] = new Array();'."\n";
+				$js_var .= 'destinations[' . $index . '][0] = "' . $dest['label'] . "\";\n";
+				$js_var .= 'destinations[' . $index . '][1] = "' . $dest['dest'] . "\";\n";
+				$js_var .= 'destinations[' . $index . '][2] = "' . $dest['type'] . "\";\n";
+				$js_var .= 'destinations[' . $index . '][3] = "' . $dest['id'] . "\";\n";
 				$lib = ($dest['library']) ? "true" : "false";
-				$js_var .= "destinations[" . $index . "][4] = " .$lib . ";\n";
+				$js_var .= 'destinations[' . $index . '][4] = ' .$lib . ';'."\n";
 				$index++;
 			}
 		}
 
 		//show categories
 		if ($cat) {
-				$js_var .= "destinations[" . $index . "] = new Array();\n";
-				$js_var .= "destinations[" . $index . "][0] = 'Add to category';\n";
-				$js_var .= "destinations[" . $index . "][1] = '$default_dir';\n";
-				$js_var .= "destinations[" . $index . "][2] = 'Category';\n";
-				$js_var .= "destinations[" . $index . "][3] = '';\n";
-				$js_var .= "destinations[" . $index . "][4] = true;\n";
+				$js_var .= 'destinations[' . $index . '] = new Array();'."\n";
+				$js_var .= 'destinations[' . $index . '][0] = "Add to category";'."\n";
+				$js_var .= 'destinations[' . $index . '][1] = "'.$default_dir."\";\n";
+				$js_var .= 'destinations[' . $index . '][2] = "Category";'."\n";
+				$js_var .= 'destinations[' . $index . '][3] = "";'."\n";
+				$js_var .= 'destinations[' . $index . '][4] = true;'."\n";
 		}
 		
-		$js_var .= "var categories = new Array();\n";
+		$js_var .= 'var categories = new Array();'."\n";
 		$index = 0;
 		foreach( $cats as $value ) {
-			$js_var .= "categories[" . $index . "] = new Array();\n";
-			$js_var .= "categories[" . $index . "][0] = '" . $value['id'] . "';\n";
-			$js_var .= "categories[" . $index . "][1] = '" . $value['name'] . "';\n";
-			$js_var .= "categories[" . $index . "][2] = '" . $value['parent'] . "';\n";
+			$js_var .= 'categories[' . $index . "] = new Array();\n";
+			$js_var .= 'categories[' . $index . '][0] = "' . $value['id'] . "\";\n";
+			$js_var .= 'categories[' . $index . '][1] = "' . $value['name'] . "\";\n";
+			$js_var .= 'categories[' . $index . '][2] = "' . $value['parent'] . "\";\n";
 			$index++;
 		}
 
-		$js_var .= "var pluginPath = '".plugins_url( '' , __FILE__ )."/js/';\n";
-		$js_var .= "var security = '" . wp_create_nonce( 'alt_upl_nonce' . get_current_user_id() ) . "';\n";
+		$js_var .= 'var pluginPath = "'.plugins_url( '' , __FILE__ ).'/js/";'."\n";
+		$js_var .= 'var security = "' . wp_create_nonce( 'alt_upl_nonce' . get_current_user_id() ) . "\";\n";
 		
 		return $js_var;
 	}
@@ -279,31 +279,15 @@
 	                       );
 	        }
 	
-		//add_action('admin_enqueue_scripts', 'adv_file_upload_admin_scripts');
+		add_action('admin_enqueue_scripts', 'adv_file_upload_admin_scripts');
 	}
 	
 	function adv_file_upload_admin_scripts($hook) {
-		global $adv_file_upload_admin_page, $post;
-
-		if( !($adv_file_upload_admin_page == $hook || 
-			(($hook == 'media-new.php' || $hook == 'post-new.php' || $hook == 'post.php' || $hook == 'upload.php') && 
-				get_option('adv_file_upload_replace_default'))) 
-			|| (is_object($post) && $post->post_type == "attachment" ))
-			return;
-		
-		adv_file_upload_load_scripts($hook);
-	}
-
-	function adv_file_upload_load_scripts($hook='') {
-		//global $adv_file_upload_admin_page;
-		// Only enqueue when not replacing default
-		if( $adv_file_upload_admin_page == $hook && !get_option('adv_file_upload_replace_default') )
+		global $adv_file_upload_admin_page;
+		if( $adv_file_upload_admin_page == $hook || get_option('adv_file_upload_replace_default') ) {
 			wp_enqueue_script( 'adv-file-upload' );
-		
-		wp_enqueue_style( 'adv-file-upload-css' );
-		
-		// js varaibles to page
-		return adv_admin_inline_js($hook);		
+			wp_enqueue_style( 'adv-file-upload-css' );
+		}
 	}
 
 	function adv_file_upload_set_loader() {
@@ -941,26 +925,25 @@
 	add_filter('plupload_init', 'adv_plupload_default_settings');
 
 	//add functions to plupload default settings
-	function adv_pre_plupload($args) {
-		global $pagenow;
+	function adv_pre_plupload() {
+		global $pagenow, $adv_file_upload_admin_page;
 		$screen = get_current_screen();
 
-		if( ( $pagenow == 'media-new.php' && get_option('adv_file_upload_replace_default') ) || $screen->id == 'media_page_adv-file-upload' ) {
-			echo "<script type='text/javascript'>\n";
-			echo adv_file_upload_load_scripts($pagenow);
-			echo "adv_plupload_defaults();\n";
-			echo "</script>\n";
+		if( ( $pagenow == 'media-new.php' && get_option('adv_file_upload_replace_default') ) || $screen->id == $adv_file_upload_admin_page ) {
+			echo "<script type='text/javascript'>\n"
+			. adv_admin_inline_js($screen->id)
+			. "adv_plupload_defaults();\n"
+			.  "</script>\n";
 		}
-		return $args;
 	}
-	add_action( 'pre-plupload-upload-ui', 'adv_pre_plupload');
+	add_action( 'pre-html-upload-ui', 'adv_pre_plupload');
 
 	function adv_plupload_default_script () {
-		global $wp_scripts, $pagenow;
+		global $wp_scripts, $pagenow, $adv_file_upload_admin_page;
 		$screen = get_current_screen();
 
-		if( get_option('adv_file_upload_replace_default') && !( $pagenow == 'media-new.php' || $screen->id == 'media_page_adv-file-upload' ) ) {
-			$script = adv_file_upload_load_scripts($pagenow) . "jQuery().ready( function() { adv_plupload_defaults(); } );\n";
+		if( get_option('adv_file_upload_replace_default') && !( $pagenow == 'media-new.php' || $screen->id == $adv_file_upload_admin_page ) ) {
+			$script = adv_admin_inline_js($screen->id) . "jQuery().ready( function() { adv_plupload_defaults(); } );\n";
 	
 			$data = $wp_scripts->get_data( 'wp-plupload', 'data' );
 			if ( $data )
@@ -971,6 +954,7 @@
 				$wp_scripts->add_data( 'plupload-handlers', 'data', "$data\n$script" );
 		}
 	}
+	add_action( 'customize_controls_print_footer_scripts', 'adv_plupload_default_script');
 	add_action( 'admin_footer', 'adv_plupload_default_script');
 
 	//create new post
