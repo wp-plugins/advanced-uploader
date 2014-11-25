@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 2.03
+Stable tag: 2.04
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.04 =
+* added compatability with plugin pages
 = 2.03 =
 * increased compatability with other plugins
 = 2.02 =

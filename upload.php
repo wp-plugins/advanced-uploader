@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.03
+	Version: 2.04
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -20,24 +20,6 @@
 	add_action( 'wp_ajax_adv_file_upload_new_post', 'adv_upload_new_post' );  //????
 
 	function adv_file_upload_admin_init() {
-		// Register main scripts
-		// if replacing default uploader make sure plupload is dependant on upload.js
-		if( get_option('adv_file_upload_replace_default') ) {
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.2');
-			//add upload.js to the dependaces for plupload
-			/*global $wp_scripts;
-			
-			$plupload_script = $wp_scripts->query( 'plupload', 'registered' );
-			if( is_object( $plupload_script ) )
-				if( !in_array( 'adv-file-upload', $plupload_script->deps ) )
-					$plupload_script->deps[] = 'adv-file-upload';*/
-		} else
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload2', 'pdf-js', 'id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog'), '2.2');
-		
-		//TBD wp_register_script( 'spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
-		wp_register_script( 'pdf-js', plugins_url('/js/pdf.js', __FILE__) );
-		wp_register_script( 'id3-js', plugins_url('/js/id3.min.js', __FILE__) );
-		
 		//Register Plupload 2.1.1
 		wp_register_script( 'plupload2', plugins_url('/js/plupload.full.min.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '2.1.1');
 		
@@ -45,9 +27,7 @@
 		wp_register_script( 'adv-file-upload-settings', plugins_url('/js/upload-settings.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '1.0');
 
 		// register style
-		//wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'jquery-ui-advupl-style') );
 		wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'wp-jquery-ui-dialog') );
-		//wp_register_style( 'jquery-ui-advupl-style', plugins_url('/css/jquery-ui.min.css', __FILE__ ) );
 
 		//check version number and include newer version plupload if wordpress version is older then 3.9
 		global $wp_version;
@@ -278,17 +258,25 @@
 					'adv_file_upload_manage_menu' // The function to call to render the page
 	                       );
 	        }
-	
-		add_action('admin_enqueue_scripts', 'adv_file_upload_admin_scripts');
 	}
 	
 	function adv_file_upload_admin_scripts($hook) {
 		global $adv_file_upload_admin_page;
 		if( $adv_file_upload_admin_page == $hook || get_option('adv_file_upload_replace_default') ) {
+			//register scripts here to make them work on plugin pages
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.2');
+
+			//TBD wp_register_script( 'adv-file-upload-spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
+			wp_register_script( 'adv-file-upload-pdf-js', plugins_url('/js/pdf.js', __FILE__) );
+			wp_register_script( 'adv-file-upload-id3-js', plugins_url('/js/id3.min.js', __FILE__) );
+			
+			//enqueue scripts and style
 			wp_enqueue_script( 'adv-file-upload' );
 			wp_enqueue_style( 'adv-file-upload-css' );
 		}
 	}
+	add_action('admin_enqueue_scripts', 'adv_file_upload_admin_scripts');
+	add_action('wp_enqueue_media', 'adv_file_upload_admin_scripts');
 
 	function adv_file_upload_set_loader() {
 		set_user_setting('adv_uploader', $_REQUEST['loader']);
@@ -942,7 +930,8 @@
 		global $wp_scripts, $pagenow, $adv_file_upload_admin_page;
 		$screen = get_current_screen();
 
-		if( get_option('adv_file_upload_replace_default') && !( $pagenow == 'media-new.php' || $screen->id == $adv_file_upload_admin_page ) ) {
+		if( get_option('adv_file_upload_replace_default') && 
+			!( $pagenow == 'media-new.php' || $screen->id == $adv_file_upload_admin_page ) ) {
 			$script = adv_admin_inline_js($screen->id) . "jQuery().ready( function() { adv_plupload_defaults(); } );\n";
 	
 			$data = $wp_scripts->get_data( 'wp-plupload', 'data' );
