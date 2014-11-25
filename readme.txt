@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.04
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -50,6 +50,14 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.04 =
+* added compatability with plugin pages
+= 2.03 =
+* increased compatability with other plugins
+= 2.02 =
+* added scan uploads directory function
+* improved compatability with other plugins, so that when replacing default plugin, advanced uplaoder is included
+* improved default handling of new upload destiantion so that it assume new upload directory is in default wordpress uploads directory
 = 2.01 =
 * corrected error in minified javascript file
 = 2.0 =
@@ -92,6 +100,8 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.03 = minor bugfixes
+= 2.02 = added scan uploads directory function and bugfixes
 = 2.01 = corrected error in minified javascript file
 = 2.0 = added error handling for chunk uploading
 = 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view
