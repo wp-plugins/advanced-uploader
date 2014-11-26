@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.04
+	Version: 2.05
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -24,7 +24,7 @@
 		wp_register_script( 'plupload2', plugins_url('/js/plupload.full.min.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '2.1.1');
 		
 		// Register settings scripts
-		wp_register_script( 'adv-file-upload-settings', plugins_url('/js/upload-settings.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '1.0');
+		wp_register_script( 'adv-file-upload-settings', plugins_url('/js/upload-settings.min.js', __FILE__), array( 'jquery', 'jquery-ui-dialog' ), '1.0');
 
 		// register style
 		wp_register_style('adv-file-upload-css', plugins_url('/css/upload.css', __FILE__), array( 'wp-jquery-ui-dialog') );
@@ -573,11 +573,11 @@
 		$index=0;
 
 		//headings
-		echo "<div id='adv_file_upload_destination_headiings'  style='overflow:hidden;'>";
-		echo "<div style='float:left;width:135px;'>Label</div>";
-		echo "<div style='float:left;width:285px;'>Destination</div>";
-		echo "<div style='float:left;'>Add to Library</div>";
-		echo "</div>";
+		echo "<div id='adv_file_upload_destination_headiings'  style='overflow:hidden;'>\n";
+		echo "<div style='float:left;width:135px;'>Label</div>\n";
+		echo "<div style='float:left;width:285px;'>Destination</div>\n";
+		echo "<div style='float:left;'>Add to Library</div>\n";
+		echo "</div>\n";
 		echo "<div id='adv_file_upload_destinations' style='clear:both'>\n";
 		
 		// show default location
@@ -585,12 +585,12 @@
 		$default_dir = str_replace ( ABSPATH, '', $upload_dir['path'] );
 		$base_dir = str_replace ( ABSPATH, '', $upload_dir['basedir'] );
 		
-		echo "<script type='text/javascript'>var adv_upload_base_dir = '$base_dir'</script>";
-		echo "<div id='adv_file_upload_destination_default'  style='overflow:hidden;'>";
-		echo "<input id='adv_file_upload_destination_default' type='text' value='Default' style='float:left;width:135px;' disabled />";
-		echo "<input id='adv_file_upload_destination_destination_default' type='text' value='$default_dir' style='float:left;width:285px;' disabled />";
- 		echo "<input id='adv_file_upload_destination_library_default' type='checkbox' value='1' style='float:left;margin:5px;' checked disabled />";
-		echo "</div>";
+		echo "<script type='text/javascript'>var adv_upload_base_dir = '$base_dir'</script>\n";
+		echo "<div id='adv_file_upload_destination_default'  style='overflow:hidden;'>\n";
+		echo "<input id='adv_file_upload_destination_default' type='text' value='Default' style='float:left;width:135px;' disabled />\n";
+		echo "<input id='adv_file_upload_destination_destination_default' type='text' value='$default_dir' style='float:left;width:285px;' disabled />\n";
+ 		echo "<input id='adv_file_upload_destination_library_default' type='checkbox' value='1' style='float:left;margin:5px;' checked disabled />\n";
+		echo "</div>\n";
 
 		if (isset($destinations) && $destinations)
 		    foreach ($destinations as $dest) {
@@ -613,15 +613,15 @@
 		}
 		
 		// add new button
-		echo "</div>";
-		echo "<input type='hidden' id='index' value='$index' />";
-		echo '<input type="button" name="new_dest" id="new_dest" class="button button-primary" value="+" style="width:2.5em;float:right;" onClick="addButton()" />';
-		echo "</div>";
+		echo "</div>\n";
+		echo "<input type='hidden' id='index' value='$index' />\n";
+		echo '<input type="button" name="new_dest" id="new_dest" class="button button-primary" value="+" style="width:2.5em;float:right;" onClick="addButton()" />'."\n";
+		echo "</div>\n";
 		echo "<p class='clear'>";
 		echo "<input type='button' name='del_dest' id='del_dest_$index' class='button button-primary' value='Scan' onClick='scanButton()'/>";
-		echo " Scan Uploads directory for new destinations</p>";
- 		echo "<p><i>Note: Thumbnail images are only created when adding to Wordpress Library</i></br>";
- 		echo "<i>Note: When adding to Wordpress Library your directory needs to be within the default upload directory</i></p>";
+		echo " Scan Uploads directory for new destinations</p>\n";
+ 		echo "<p><i>Note: Thumbnail images are only created when adding to Wordpress Library</i></br>\n";
+ 		echo "<i>Note: When adding to Wordpress Library your directory needs to be within the default upload directory</i></p>\n";
 	}
 	
 	// ------------------------------------------------------------------
