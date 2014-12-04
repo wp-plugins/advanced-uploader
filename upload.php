@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.05
+	Version: 2.06
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -65,14 +65,16 @@
 	function adv_admin_inline_js($hook) {
 		global $adv_file_upload_admin_page, $wpdb;
 		//get plugin's options
-  		$destinations = get_option('adv_file_upload_destination', array());
+  		$destinations = get_option('adv_file_upload_destination');
+  		if( $destinations == false )
+  			$destinations = array();
   		$gallery = get_option('adv_file_upload_gallery');
   		$bws = get_option('adv_file_upload_bws');
   		$cat = get_option('adv_file_upload_cat');
   		$cats = array();
   		$progress = get_option('adv_file_upload_progress');
   		$maxFileSize = '1073741824';
-		
+
 		//set the default location
 		$upload_dir = wp_upload_dir();
 		$default_dir = str_replace ( ABSPATH, '', $upload_dir['path'] );
@@ -264,7 +266,7 @@
 		global $adv_file_upload_admin_page;
 		if( $adv_file_upload_admin_page == $hook || get_option('adv_file_upload_replace_default') ) {
 			//register scripts here to make them work on plugin pages
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.2');
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.3');
 
 			//TBD wp_register_script( 'adv-file-upload-spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 			wp_register_script( 'adv-file-upload-pdf-js', plugins_url('/js/pdf.js', __FILE__) );
@@ -727,7 +729,7 @@
 		return get_option('adv_file_upload_progress');
 	}
 	
-	function show_attachment_thumb( $link, $id, $size, $permalink, $icon, $text) {
+	function adv_file_upload_show_attachment_thumb( $link, $id, $size, $permalink, $icon, $text) {
 		$id = intval( $id );
 		$_post = & get_post( $id );
 		//get meta data
@@ -746,10 +748,10 @@
 		else
 			return $link;
 	}
-	add_filter( 'wp_get_attachment_link', 'show_attachment_thumb', 100, 6 );
+	add_filter( 'wp_get_attachment_link', 'adv_file_upload_show_attachment_thumb', 100, 6 );
 
 	//if thumbnail exist replace default icon
-	function change_mime_icon($icon, $mime = null, $post_id = null){
+	function adv_file_upload_change_mime_icon($icon, $mime = null, $post_id = null){
 		//get the path and URL to thumbnail and  store globally
 		global $thumb_path;
 		$thumb_path = "";
@@ -770,9 +772,9 @@
 		else
 			return $icon;
 	}
-	add_filter('wp_mime_type_icon', 'change_mime_icon', 100, 3);	//if thumbnail exist replace default icon
+	add_filter('wp_mime_type_icon', 'adv_file_upload_change_mime_icon', 100, 3);	//if thumbnail exist replace default icon
 
-	function change_icon_dir($icon_dir) {
+	function adv_file_upload_change_icon_dir($icon_dir) {
 		//retrive globally stored thumb path
 		global $thumb_path;
 
@@ -782,7 +784,15 @@
 		else
 			return $icon_dir;
 	}
-	add_filter('icon_dir', 'change_icon_dir', 100, 1);
+	add_filter('icon_dir', 'adv_file_upload_change_icon_dir', 100, 1);
+
+	function adv_file_upload_upload_mimes($mimes = array()) {
+		// allow SVG file upload
+		$mimes['svg'] = 'image/svg+xml';
+		
+		return $mimes;
+	}
+	add_filter( 'upload_mimes', 'adv_file_upload_upload_mimes' );
 
 	// Hide image overflow for icons replace with thumbnails in the ADMIN AREA
 	function hideoverflow() {

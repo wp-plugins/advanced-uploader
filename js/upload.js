@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 2.1
+ * version : 2.3
  */
 'use strict';
 'use strict';
@@ -226,7 +226,7 @@ function adv_plupload_defaults () {
 					var ext = respObj.data.name.split('.').pop();
 	
 					//is image create thumbnail
-					if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png/i)) {
+					if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png|svg/i)) {
 						//update display to show message
 						var item = jQuery('#media-item-' + file.id);
 						jQuery('.percent', item).html( 'Creating thumbs' );
@@ -415,12 +415,15 @@ function show_hide_uploader (e) {
 }
 				
 var createThumbImage = function (file, name, callback, src) {
-      var tempImg = new Image();
-      tempImg.src = src;
-      tempImg.onload = function() {
+	//get file extension
+	var ext = name.split('.').pop();
+	
+	var tempImg = new Image();
+	tempImg.src = src;
+	tempImg.onload = function() {
 	    var tempW = tempImg.width;
 	    var tempH = tempImg.height;
-	    if (tempH > sizes['thumbnail']['height'] || tempW > sizes['thumbnail']['width']) {
+	    if (tempH > sizes['thumbnail']['height'] || tempW > sizes['thumbnail']['width'] || ext.match(/svg/i)) {
 	        var imageMeta = new Object();
 	        var dataURL = new Object();
 	        var keys = new Array();
@@ -435,17 +438,13 @@ var createThumbImage = function (file, name, callback, src) {
 	            var MAX_WIDTH = sizes[key]['width'];
 	            var MAX_HEIGHT = sizes[key]['height'];
 
-	            if (tempH > MAX_HEIGHT || tempW > MAX_WIDTH) {
+	            if (tempH > MAX_HEIGHT || tempW > MAX_WIDTH  || ext.match(/svg/i)) {
 		        if (tempW > imageH) {
-		            if (tempW > MAX_WIDTH) {
 		               tempH *= MAX_WIDTH / tempW;
 		               tempW = MAX_WIDTH;
-		            } 
 		        } else {
-		            if (tempH > MAX_HEIGHT) {
 		               tempW *= MAX_HEIGHT / tempH;
 		               tempH = MAX_HEIGHT;
-		            }
 		        }
 		    
 		        //round down image dimesions
@@ -453,7 +452,7 @@ var createThumbImage = function (file, name, callback, src) {
 		        tempH = Math.round(tempH);
 		        
 		        //set thumbnail filename
-		        var filename = name.replace(/\.(jpg|jpeg|png)$/i, "-"+tempW+"x"+tempH+".jpg");
+		        var filename = name.replace(/\.(jpg|jpeg|png|svg)$/i, "-"+tempW+"x"+tempH+".jpg");
 		        
 		        if (nameslist.search(filename) == -1) {
 		        	nameslist += filename + ';';
