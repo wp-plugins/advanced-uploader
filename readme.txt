@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 2.0
+Stable tag: 2.06
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,7 @@ This Plugins extends the functionality provided by wordpress by enabling the fol
 * Multiple upload directories.
 * Creates thumbnails in browser instead of server.  This is to avoid memory limits on shared hosts.
 * Creates thumbnails for PDF files using PDF.js.
+* Creates thumbnails for SVG files for browser compability.
 * Add files straight to Wordpress Gallery.
 * Add files straight to BWS Gallery.
 * Select Category for files before uploading.  Will read MP3 tags to guess category. Can exclude categories from list e.g. Uncategorized.
@@ -50,6 +51,18 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.06 =
+* fixed bug with no destinations causing php warning
+* add SVG support
+= 2.05 =
+* added scan uploads directory function
+* improved default handling of new upload destiantion so that it assume new upload directory is in default wordpress uploads directory
+= 2.04 =
+* added compatability with plugin pages
+= 2.03 =
+* increased compatability with other plugins
+= 2.02 =
+* improved compatability with other plugins, so that when replacing default plugin, advanced uplaoder is included
 = 2.01 =
 * corrected error in minified javascript file
 = 2.0 =
@@ -92,6 +105,11 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.06 = added SVG Support and minor bugfixes
+= 2.05 = added scan uploads directory function
+= 2.04 = minor bugfixes
+= 2.03 = minor bugfixes
+= 2.02 = minor bugfixes
 = 2.01 = corrected error in minified javascript file
 = 2.0 = added error handling for chunk uploading
 = 1.14 = added support for replacing uploader in new library grid view and ability to select destiantion from view

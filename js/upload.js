@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 2.0
+ * version : 2.3
  */
 'use strict';
 'use strict';
@@ -226,7 +226,7 @@ function adv_plupload_defaults () {
 					var ext = respObj.data.name.split('.').pop();
 	
 					//is image create thumbnail
-					if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png/i)) {
+					if(destinations[file.dest][4] &&  ext.match(/jpg|jpeg|png|svg/i)) {
 						//update display to show message
 						var item = jQuery('#media-item-' + file.id);
 						jQuery('.percent', item).html( 'Creating thumbs' );
@@ -253,7 +253,7 @@ function adv_plupload_defaults () {
                         {
 				file.status = plupload.FAILED;
 				up.trigger('QueueChanged', file);
-				var text = {response: "<div class='media-upload-error'><B>"+file.name+"</B> "+response.data.message+"</div>"}
+				var text = {response: "<div class='media-upload-error'><B>"+file.name+"</B> "+response.data.message+"</div>"};
 				up.trigger('FileUploaded', file, text);
 			}
 		}
@@ -270,6 +270,7 @@ function adv_plupload_defaults () {
 	if (typeof _wpPluploadSettings === 'object') {
 		_wpPluploadSettings.defaults.preinit  = adv_preinit;
 		max_file_size = parseInt(_wpPluploadSettings.defaults.filters.max_file_size);
+		updatehtml();
 		if (typeof adv_uploader === 'boolean' && adv_uploader)
 			_wpPluploadSettings.defaults.filters.max_file_size = adv_max_file_size;
 	}
@@ -311,8 +312,13 @@ function convertBytes (num) {
 	return num + ' ' + units;
 }
 
-// do browser checks add listeners on document ready
 jQuery(document).ready(function() {
+	if( max_file_size > 0 )
+		updatehtml();
+});
+
+// update the page HMTL so that page works correctly with plugin.
+function updatehtml () {
 	jQuery('.media-upload-form').on('click.uploader', function(e) {
 		var target = jQuery(e.target);
 
@@ -332,7 +338,7 @@ jQuery(document).ready(function() {
 	});
 
 	//create checkbox for changing which uploader is used 
-	if (adv_replace_default) {
+	if (adv_replace_default && max_file_size > 0) {
 		max_file_size_display = convertBytes (max_file_size);
 		adv_max_file_size_display = convertBytes (adv_max_file_size);
 		
@@ -375,7 +381,7 @@ jQuery(document).ready(function() {
 					jQuery('#adv_uploader_checkbox_p').click();
 		});
 	}
-});
+}
 
 function show_hide_uploader (e) {
 	if (e.target.id.indexOf('adv_uploader_checkbox') == -1)
@@ -409,12 +415,15 @@ function show_hide_uploader (e) {
 }
 				
 var createThumbImage = function (file, name, callback, src) {
-      var tempImg = new Image();
-      tempImg.src = src;
-      tempImg.onload = function() {
+	//get file extension
+	var ext = name.split('.').pop();
+	
+	var tempImg = new Image();
+	tempImg.src = src;
+	tempImg.onload = function() {
 	    var tempW = tempImg.width;
 	    var tempH = tempImg.height;
-	    if (tempH > sizes['thumbnail']['height'] || tempW > sizes['thumbnail']['width']) {
+	    if (tempH > sizes['thumbnail']['height'] || tempW > sizes['thumbnail']['width'] || ext.match(/svg/i)) {
 	        var imageMeta = new Object();
 	        var dataURL = new Object();
 	        var keys = new Array();
@@ -429,17 +438,13 @@ var createThumbImage = function (file, name, callback, src) {
 	            var MAX_WIDTH = sizes[key]['width'];
 	            var MAX_HEIGHT = sizes[key]['height'];
 
-	            if (tempH > MAX_HEIGHT || tempW > MAX_WIDTH) {
+	            if (tempH > MAX_HEIGHT || tempW > MAX_WIDTH  || ext.match(/svg/i)) {
 		        if (tempW > imageH) {
-		            if (tempW > MAX_WIDTH) {
 		               tempH *= MAX_WIDTH / tempW;
 		               tempW = MAX_WIDTH;
-		            } 
 		        } else {
-		            if (tempH > MAX_HEIGHT) {
 		               tempW *= MAX_HEIGHT / tempH;
 		               tempH = MAX_HEIGHT;
-		            }
 		        }
 		    
 		        //round down image dimesions
@@ -447,7 +452,7 @@ var createThumbImage = function (file, name, callback, src) {
 		        tempH = Math.round(tempH);
 		        
 		        //set thumbnail filename
-		        var filename = name.replace(/\.(jpg|jpeg|png)$/i, "-"+tempW+"x"+tempH+".jpg");
+		        var filename = name.replace(/\.(jpg|jpeg|png|svg)$/i, "-"+tempW+"x"+tempH+".jpg");
 		        
 		        if (nameslist.search(filename) == -1) {
 		        	nameslist += filename + ';';
@@ -829,7 +834,7 @@ function selectDestination (lib_only, files, callback) {
 
 	dlg.dialog({
 		title    : 'Destination',
-		dialogClass : 'advuplddialog',
+		dialogClass : 'wp-dialog',
 		width    : 'auto',
 		modal    : true,
 		autoOpen : false,
@@ -846,10 +851,7 @@ function selectDestination (lib_only, files, callback) {
 			'click' : select
 		}],
 		close : function () {
-			jQuery(document).off( 'change', '.ui-dialog select', addBoxCheck);
-			jQuery('.ui-widget-overlay').remove();
-			jQuery('.ui-dialog').remove();
-			jQuery('.ui-autocomplete').remove();
+			jQuery(this).dialog('destroy').remove();
 		}});
 	dlg.dialog('open');
 }

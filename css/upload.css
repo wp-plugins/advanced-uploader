@@ -1,9 +1,12 @@
+
+text/css upload.css 
+ASCII C program text
 #media-items {
 	margin: 1em 0;
 }
 
 /* popup */
-.ui-widget-overlay + .ui-dialog {
+.wp-dialog {
 	z-index: 300002;
 }
 
