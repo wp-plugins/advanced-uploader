@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 2.3
+ * version : 2.4
  */
 'use strict';
 'use strict';
@@ -479,12 +479,6 @@ var createThumbImage = function (file, name, callback, src) {
 
       
 var pdf = function (file, name, callback) {
-	//
-	// Disable workers to avoid yet another cross-origin issue (workers need the URL of
-	// the script to be loaded, and currently do not allow cross-origin scripts)
-	//
-	PDFJS.disableWorker = true;
-	
 	var pdfDoc = null;
 	
 	//

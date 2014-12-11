@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.06
+	Version: 2.08
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -244,7 +244,8 @@
 
 		$js_var .= 'var pluginPath = "'.plugins_url( '' , __FILE__ ).'/js/";'."\n";
 		$js_var .= 'var security = "' . wp_create_nonce( 'alt_upl_nonce' . get_current_user_id() ) . "\";\n";
-		
+		$js_var .= 'PDFJS.workerSrc = "'.plugins_url( '' , __FILE__ ).'/js/pdf.worker.js";'."\n";
+
 		return $js_var;
 	}
 	
@@ -266,7 +267,7 @@
 		global $adv_file_upload_admin_page;
 		if( $adv_file_upload_admin_page == $hook || get_option('adv_file_upload_replace_default') ) {
 			//register scripts here to make them work on plugin pages
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.3');
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.4');
 
 			//TBD wp_register_script( 'adv-file-upload-spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 			wp_register_script( 'adv-file-upload-pdf-js', plugins_url('/js/pdf.js', __FILE__) );
@@ -289,13 +290,16 @@
 		//check_ajax_referer('alt_upl_nonce' . get_current_user_id(),'security');
 		$upload_dir = wp_upload_dir();
 		$directories = array();
+		$cur_dest = array();
 		
 		//search through existing destinations so that they can be matched
-  		foreach( get_option('adv_file_upload_destination', array()) as $dest )
-  			$cur_dest[$dest[dest]] = array(
-						"label" => $dest[label],
-						"library" => $dest[library],
-					);
+		$dests = get_option('adv_file_upload_destination');
+		if( $dests != false )
+	  		foreach( $dests as $dest )
+	  			$cur_dest[$dest[dest]] = array(
+							"label" => $dest[label],
+							"library" => $dest[library],
+						);
 
 		//scan directory forpossible destinations
 		$directories = adv_file_upload_traverseDirTree( $upload_dir['basedir'], '/', $directories, $cur_dest );
