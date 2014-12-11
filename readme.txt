@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 2.07
+Stable tag: 2.08
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.08 = 
+* fixed commit missing new file
 = 2.07 =
 * update pdf.js to version 1.0.712
 = 2.06 =
@@ -107,6 +109,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.08 = fixed commit missing new file
 = 2.07 = update pdf.js
 = 2.06 = added SVG Support and minor bugfixes
 = 2.05 = added scan uploads directory function
