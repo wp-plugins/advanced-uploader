@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.0
-Stable tag: 2.06
+Stable tag: 2.07
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -29,7 +29,7 @@ This plugin requires a modern browser, e.g. IE8 will not work.
 
 This plugin uses code from the following sources
 * Plupload - multi-runtime File Uploader - v2.1.1 - Copyright 2013, Moxiecode Systems AB.  This is the software wordpress use for uploading, just using a newer version for extra features.
-* PDF.JS - Copyright 2012 Mozilla Foundation - v0.8.377 - This is to create the PDF thumbnails.
+* PDF.JS - Copyright 2012 Mozilla Foundation - v1.0.712 - This is to create the PDF thumbnails.
 
 == Installation ==
 
@@ -51,6 +51,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.07 =
+* update pdf.js to version 1.0.712
 = 2.06 =
 * fixed bug with no destinations causing php warning
 * add SVG support
@@ -105,6 +107,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.07 = update pdf.js
 = 2.06 = added SVG Support and minor bugfixes
 = 2.05 = added scan uploads directory function
 = 2.04 = minor bugfixes
