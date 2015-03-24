@@ -359,13 +359,21 @@
 	function adv_upload_add_file ($name, $target_path, $parent_id, $sizes, $dest, $galleryType, $galleryID) {
 		$upload_dir = wp_upload_dir();
 		$wp_filetype = wp_check_filetype($name);
+
+		//make sure target_path has a DIRECTORY_SEPARATOR at the end
+		if(substr($target_path,-1)!=DIRECTORY_SEPARATOR)
+			$target_path .= DIRECTORY_SEPARATOR;
 		
 		//set parent ID to add picture to BWS gallery
 		if ($galleryType == 'BWS Gallery')
 			$parent_id = $galleryID;
 		
+		//change target path to url
+		$guid = str_replace ( $upload_dir['basedir'], $upload_dir ['baseurl'], $target_path );
+		$guid = str_replace ( "\\", "/", $guid );
+		
 		$attachment = array(
-		     'guid' => $upload_dir ['url'] . '/' . $name, 
+		     'guid' => $guid . $name, 
 		     'post_mime_type' => $wp_filetype['type'],
 		     'post_title' => preg_replace('/\.[^.]+$/', '', $name),
 		     'post_content' => '',

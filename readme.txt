@@ -51,6 +51,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.09 = 
+* fixed target path to make sure it always ends with a directory separator.
 = 2.08 = 
 * fixed commit missing new file
 = 2.07 =
@@ -109,6 +111,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.09 = minor bugfixes
 = 2.08 = fixed commit missing new file
 = 2.07 = update pdf.js
 = 2.06 = added SVG Support and minor bugfixes
