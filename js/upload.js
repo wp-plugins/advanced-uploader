@@ -2,7 +2,7 @@
  * upload.js
  *
  * handles large file uploading.
- * version : 2.4
+ * version : 2.5
  */
 'use strict';
 'use strict';
@@ -805,8 +805,10 @@ function selectDestination (lib_only, files, callback) {
     				jQuery( "#" + catId ).combobox({ desc: 'adv_' + catId, id: 'ac_' + catId });
 		    		if (id == '')
 					id = 0;
-				if( files[id].album )
-					jQuery( '#ac_' + catId + ' input' ).val(files[id].album);
+				if( files[id].album ) {
+					jQuery( '#ac_' + catId + ' input' ).autocomplete( "search", files[id].album );
+					
+				}
     			} else
     				jQuery( "#ac_" + catId ).show();
 		} else if( destinations[e.target.selectedIndex-1] 
@@ -879,6 +881,7 @@ function selectDestination (lib_only, files, callback) {
             minLength: 0,
             source: $.proxy( this, "_source" )
           });
+
           
         this._on( this.input, {
           autocompleteselect: function( event, ui ) {
@@ -947,16 +950,21 @@ function selectDestination (lib_only, files, callback) {
         // Search for a match (case-insensitive)
         var value = this.input.val(),
           valueLowerCase = value.toLowerCase(),
-          valid = false;
+          valid = false,
+          validValue = "";
         this.element.children( "option" ).each(function() {
           if ( $( this ).text().toLowerCase() === valueLowerCase ) {
             this.selected = valid = true;
+            validValue =  $( this ).text();
             return false;
           }
         });
  
         // Found a match, nothing to do
         if ( valid ) {
+          this.input.val( validValue );
+          this.element.val( validValue );
+          this.input.data( "ui-autocomplete" ).term = validValue;
           return;
         }
  

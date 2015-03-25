@@ -3,7 +3,7 @@
 	Plugin Name: Advanced uploader
 	Plugin URI: 
 	Description: This plugin provides an interface for uploading files.  Features - large files to upload to your site even on shared host with http upload limit.  creates thumbnails in the browser including pdf thumbnails.
-	Version: 2.09
+	Version: 2.10
 	Author: Oli Redmond
 	Author URI: 
 	*/
@@ -267,7 +267,7 @@
 		global $adv_file_upload_admin_page;
 		if( $adv_file_upload_admin_page == $hook || get_option('adv_file_upload_replace_default') ) {
 			//register scripts here to make them work on plugin pages
-			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.4');
+			wp_register_script( 'adv-file-upload', plugins_url('/js/upload.min.js', __FILE__), array( 'plupload', 'adv-file-upload-pdf-js', 'adv-file-upload-id3-js', 'jquery-ui-autocomplete', 'jquery-ui-dialog' ), '2.5');
 
 			//TBD wp_register_script( 'adv-file-upload-spark-md5', plugins_url('/js/spark-md5.min.js', __FILE__) );
 			wp_register_script( 'adv-file-upload-pdf-js', plugins_url('/js/pdf.js', __FILE__) );

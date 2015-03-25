@@ -3,7 +3,7 @@ Contributors: ojredmond
 Tags: upload, thumbnail
 Requires at least: 3.5
 Tested up to: 4.2
-Stable tag: 2.09
+Stable tag: 2.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,8 @@ Go to Settings -> Media to configure.
 2. This screen shot is for the destination selection page
 
 == Changelog ==
+= 2.10 = 
+* fixed category match so match not found if no category.
 = 2.09 = 
 * fixed target path to make sure it always ends with a directory separator.
 = 2.08 = 
@@ -111,6 +113,7 @@ Go to Settings -> Media to configure.
 * First version uploaded to wordpress library.
 
 == Upgrade Notice ==
+= 2.10 = minor bugfixes
 = 2.09 = minor bugfixes
 = 2.08 = fixed commit missing new file
 = 2.07 = update pdf.js
